@@ -42,4 +42,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    //１人のユーザーは複数の勤怠を持つ
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    //１人のユーザーは複数の勤怠申請を出せる
+    public function attendancesRequest()
+    {
+        return $this->hasMany(AttendanceRequest::class);
+    }
 }

@@ -1,8 +1,6 @@
-# Docker関係
 docker/mysql/data/
 docker/mysql/logs/
 
-# Laravel関係
 src/vendor/
 src/node_modules/
 src/storage/
@@ -10,7 +8,6 @@ src/bootstrap/cache/
 src/.env
 src/.env.testing
 
-# IDE関係
 .DS_Store
 .idea/
 .vscode/

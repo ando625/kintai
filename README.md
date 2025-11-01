@@ -1,8 +1,8 @@
-# Flema アプリケーション環境構築・操作手順
+# 勤怠 アプリケーション環境構築・操作手順
 
-このリポジトリは **Docker + Laravel 10 + MySQL + Fortify** 環境で動作する Web アプリです。  
+このリポジトリは **Docker + Laravel 10 + MySQL + Fortify** 環境で動作する Web アプリです。
 ここでは **環境構築・テスト・メール認証** を含めて順を追って説明します。
-このアプリでは **新規登録後のメール認証** を MailHog を使って確認できます。  
+このアプリでは **新規登録後のメール認証** を MailHog を使って確認できます。
 認証が完了するとプロフィール登録画面に遷移します。
 
 ---
@@ -137,17 +137,10 @@ php artisan key:generate
 php artisan migrate:fresh --seed
 ```
 
-### 3-6. ストレージリンク作成
-
-```bash
-php artisan storage:link
-```
 
 ---
 
----
-
-## テスト用データベースの準備
+## 4. テスト用データベースの準備
 
 ### ⚠️ 注意
 本番データベースをテストで使うのは非常に危険です。
@@ -347,7 +340,7 @@ DB_DATABASE=demo_test
 php artisan test
 ```
 
----
+
 
 ---
 ## トラブルシューティング（MailHogエラー）
@@ -359,6 +352,18 @@ php artisan test
 docker rm -f mailhog
 docker compose up -d --build
 ```
+
+
+---
+## 5. テーブル
+
+
+
+
+---
+## 6. ED図
+
+![ER図](./docs/ED.png)
 
 ---
 

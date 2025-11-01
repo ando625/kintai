@@ -1,5 +1,4 @@
 
-
 services:
   nginx:
     image: nginx:1.21.1
@@ -49,5 +48,5 @@ services:
     platform: linux/amd64
     container_name: mailhog
     ports:
-      - "1025:1025"   # SMTPサーバー用ポート（Laravelがここへ送信）
-      - "8025:8025"   # Web UI（ブラウザで見る）
+      - "1025:1025"
+      - "8025:8025"
