@@ -1,5 +1,6 @@
 # 勤怠 アプリケーション環境構築・操作手順
 
+本アプリは「一般ユーザー」と「管理者ユーザー」で構成される勤怠管理システムです。
 このリポジトリは **Docker + Laravel 10 + MySQL + Fortify** 環境で動作する Web アプリです。
 ここでは **環境構築・テスト・メール認証** を含めて順を追って説明します。
 このアプリでは **新規登録後のメール認証** を MailHog を使って確認できます。
@@ -136,6 +137,11 @@ php artisan key:generate
 ```bash
 php artisan migrate:fresh --seed
 ```
+
+#### 勤怠ダミーデータについて
+- 過去7か月分（2025年4月まで）の勤怠データが作成済み
+- 今日以降のデータは含まれず、出勤・退勤や休憩時間、土日出勤もランダム設定
+
 
 
 ---
@@ -355,6 +361,14 @@ docker compose up -d --build
 
 
 ---
+
+## 勤怠一覧画面について
+
+###　注意: 勤怠がない日は時間欄は空欄です。 **「詳細」リンクはデザイン上表示していますが、クリックできません。**
+
+
+---
+
 ## 5. テーブル
 
 
@@ -378,24 +392,148 @@ docker compose up -d --build
 ## 8. 注意事項
 
 - MySQL データは `.gitignore` により Git には含めない
-- Mac M1/M2 ARM 環境では MySQL と phpMyAdmin に `platform: linux/amd64` が指定済み
-- PHP 8.1 以降、`mbstring.internal_encoding` は廃止されているため、警告が出たらコメントアウト
+
+
+
+### 勤怠詳細画面（一般ユーザー）の編集制御
+
+勤怠詳細画面では、勤怠データが「承認待ち」の状態の場合、
+修正ページへの遷移を行わず、同一の Blade テンプレート内で以下の対応を実施しています。
+
+- 編集フォームの各入力項目を disabled 化
+- 画面下部に「承認待ちのため修正はできません。」メッセージを表示
+- 状態に応じて UI の表示を切り替えることで、ユーザーが現在の状況を即座に理解できるようにしています
+
+---
+## 認証機能（Authentication）
+
+本プロジェクトでは、Laravel Fortify の一部機能（会員登録など）を利用していますが、
+**ログイン機能は Fortify を使用せず、自作の認証処理を実装**しています。
+
+### 一般ユーザー（User）ログイン
+- コントローラ: `App\Http\Controllers\User\AuthController`
+- バリデーション: `App\Http\Requests\LoginRequest`
+- ログイン認証処理では `Auth::guard('web')->attempt($credentials)` を使用
+- セッション再生成 (`$request->session()->regenerate()`) によるセキュリティ対策済み
+
+### 管理者（Admin）ログイン
+- コントローラ: `App\Http\Controllers\Admin\AdminAuthController`
+- バリデーション: `App\Http\Requests\AdminLoginRequest`
+- ガード: `admin` ガードを使用（`config/auth.php` に設定）
+- `Auth::guard('admin')->attempt($credentials)` により管理者認証を実施
+
+### FormRequest の活用
+各ログイン処理で **FormRequest** を使用し、以下を実現しています。
+- バリデーションルールの明確化
+- エラーメッセージの日本語対応
+- 認証処理（`authenticate()`メソッド）をFormRequest側に分離して可読性を向上
+
+### Fortify との使い分け
+- Fortify：会員登録（`/register`）やメール認証のみ利用
+- ログイン：自作コントローラ＋FormRequestで実装（Fortify側は無効化）
 
 ---
 
+#### 参考
+- 一般ログイン：`App\Http\Controllers\User\AuthController`
+- 管理者ログイン：`App\Http\Controllers\Admin\AdminAuthController`
+- Fortify設定：`App\Providers\FortifyServiceProvider`
+
+### 一般ログインURL   http://localhost/　  　又は　  http://localhost/　login
+### 管理者ログインURL   http://localhost/admin/login 
+
+
+### 認証仕様
+
+本アプリでは「一般ユーザー」と「管理者」の2種類の認証を用意しています。
+
+| 種類 | ガード名 | セッション |
+|------|-----------|-------------|
+| 一般ユーザー | web | usersテーブル |
+| 管理者 | admin | adminsテーブル |
+
+###　セッション管理について
+- 本アプリでは「一般ユーザー」と「管理者」の2種類の認証を用意しています。
+- 同一ブラウザで両方にログインするとセッションが混在して不具合が起こる可能性があります。
+- ログイン前に必ず前のアカウントをログアウトしてください。
+- 	•	一般ユーザーの場合：画面右上の「ログアウト」ボタンからログアウト
+	•	管理者の場合：管理画面右上の「ログアウト」ボタンからログアウト
+
+
+#### 補足
+開発者向けに、ログイン時に自動で他方のセッションを破棄するコードも用意していますが、基本はユーザー自身が明示的にログアウトする運用を推奨しています。
+
+
+---
 ## 9. テストユーザー
 
 ### 管理者ユーザー
+- 管理者ユーザーログインURL http://localhost/admin/login 
 
+メールアドレス
+testadmin@gmail.com
+
+パスワード
+testpass
 
 ### 一般ユーザー
 
+- ダミーデータ作成時に 7 人分のユーザーが作成され、MailHog にそれぞれ認証メールが届きます。
+- ログインしたユーザーのメールを開き、メール内の「Verify Email Address」リンクをクリックして認証してください。メール認証が完了し、勤怠画面に遷移します
+- 他のユーザーのメールをクリックしても認証はできません。必ず ログインしたユーザーと同じメールで認証 してください。
 
+| 名前       | メールアドレス              |
+|------------|----------------------------|
+| 西 伶奈    | rena.n@coachtech.com       |
+| 山田 太郎  | taro.y@coachtech.com       |
+| 増田 一世  | issei.m@coachtech.com      |
+| 山本 敬吉  | keikichi.y@coachtech.com   |
+| 秋田 朋美  | tomomi.a@coachtech.com     |
+| 中西 教夫  | norio.n@coachtech.com      |
+| 安倍 祐作  | yusaku.a@coachtech.com     |
+
+- パスワードは全員共通：`password`
 
 
 ---
 
-## １０. 開発環境 URL
+
+## 10. ログイン動作について
+
+一般ユーザー（`web`ガード）と管理者（`admin`ガード`）は別セッションで管理されています。  
+同一ブラウザで両方に同時ログインするとセッションが衝突し、リダイレクト不具合が発生する場合があります。
+
+### 動作確認時の注意
+- 一般ユーザー → Chrome  
+- 管理者 → Safari または シークレットモード  
+など、**別ブラウザまたは別セッションで確認**してください。
+
+### 実装上の補足
+管理者ログイン時に、もし一般ユーザーでログイン中だった場合は、  
+下記の処理で一般ユーザーを強制ログアウトするようにしています。（一般ユーザーも同じ処理をしています強制ログアウト）
+
+```php
+// AdminAuthController@login より抜粋
+if (Auth::guard('web')->check()) {
+    Auth::guard('web')->logout();
+    session()->invalidate();
+    session()->regenerateToken();
+}
+```
+---
+## 使用技術
+
+- PHP 8.1.33 
+- Laravel 10.49.1
+- MySQL 8.0.26
+- MailHog
+- Laravel Fortify
+- PHPUnit
+- Git
+
+
+---
+## 11. 開発環境 URL
 
 - 開発環境: http://localhost/
 - phpMyAdmin: http://localhost:8080/

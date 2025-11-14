@@ -1,0 +1,182 @@
+/* 勤怠管理画面全体のコンテナ */
+.attendance-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 70px);
+    background-color: #e5e7eb;
+    padding: 20px;
+}
+
+/* 勤怠カード */
+.attendance-card {
+    width: 100%;
+    max-width: 920px;
+    padding: 100px 60px 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* ステータスバッジ */
+.status-badge {
+    background-color: #C8C8C8;
+    color: #696969;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.status-badge.status-working {
+    background-color: #d1d5db;
+    color: #4b5563;
+}
+
+.status-badge.status-break {
+    background-color: #d1d5db;
+    color: #4b5563;
+}
+
+/* 日付表示 */
+.date-display {
+    font-size: 40px;
+    color: #000000;
+    margin-bottom: 24px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+/* 時刻表示 */
+.time-display {
+    font-size: 80px;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 70px;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+/* ボタングループ */
+.button-group {
+    display: flex;
+    gap: 65px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* フォームをインライン表示 */
+.inline-form {
+    display: inline-block;
+}
+
+.button-group form {
+    margin: 0;
+}
+
+/* 共通ボタンスタイル */
+.btn {
+    padding: 14px 18px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 150px;
+}
+
+/* プライマリボタン（出勤・退勤） */
+.btn-primary {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+
+.btn-primary:active {
+    background-color: #374151;
+}
+
+/* セカンダリボタン（休憩入・休憩戻） */
+.btn-secondary {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+
+
+.btn-secondary:active {
+    background-color: #f3f4f6;
+}
+
+/* メッセージ表示 */
+.message {
+    font-size: 22px;
+    color: #000000;
+    font-weight: 400;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* PC: 1400px～1540px */
+@media screen and (min-width: 1400px) and (max-width: 1540px) {
+    .attendance-card {
+        max-width: 1000px;
+        padding: 120px 80px 140px;
+    }
+
+    .date-display {
+        font-size: 44px;
+    }
+
+    .time-display {
+        font-size: 90px;
+    }
+
+    .button-group {
+        gap: 75px;
+    }
+
+    .btn {
+        font-size: 22px;
+        min-width: 160px;
+        padding: 16px 20px;
+    }
+
+    .message {
+        font-size: 24px;
+        margin-top: 60px;
+    }
+}
+
+/* タブレット: 768px～850px */
+@media screen and (min-width: 768px) and (max-width: 850px) {
+    .attendance-card {
+        padding: 80px 40px 100px;
+    }
+
+    .date-display {
+        font-size: 32px;
+    }
+
+    .time-display {
+        font-size: 60px;
+    }
+
+    .button-group {
+        gap: 30px;
+    }
+
+    .btn {
+        font-size: 18px;
+        min-width: 120px;
+        padding: 12px 16px;
+    }
+
+    .message {
+        font-size: 20px;
+        margin-top: 40px;
+    }
+}

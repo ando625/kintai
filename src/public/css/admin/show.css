@@ -1,0 +1,292 @@
+/* 勤怠詳細ページのスタイル */
+.attendance-detail-container {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 40px 20px;
+}
+
+.content-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 40px;
+    padding-left: 15px;
+    border-left: 8px solid #000000;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.detail-card {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.detail-list {
+    margin: 0;
+    padding: 0;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #E1E1E1;
+    padding: 25px 40px;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    width: 280px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #737373;
+    margin: 0;
+    text-align: left;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    flex: 1;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+    margin: 0;
+}
+
+.detail-value-name {
+    margin-left: 18px;
+}
+
+.detail-value>.date-year,
+.detail-value>.date-month {
+    display: inline-block;
+}
+
+.date-year {
+    width: 100px;
+    margin-left: 20px;
+    margin-right: 130px;
+}
+
+.date-month {
+    display: inline-block;
+}
+
+.time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    flex-wrap: wrap;
+    row-gap: 4px;
+}
+
+.time-input {
+    width: 110px;
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.time-input:first-child {
+    margin-left: 0;
+}
+
+.time-input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+.time-separator {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.text-red {
+    color: #ff0000;
+    font-size: 14px;
+    font-weight: normal;
+    margin-top: 0;
+    width: 100%;
+    display: block;
+}
+
+.remarks-input {
+    width: 67%;
+    min-height: 80px;
+    padding: 12px;
+    margin-right: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    background-color: #fff;
+    resize: vertical;
+    font-family: inherit;
+    display: block;
+}
+
+.remarks-input:focus {
+    outline: none;
+    border-color: #000000;
+}
+
+.remarks-input+.text-red {
+    margin-top: 4px;
+}
+
+.button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+.edit-button {
+    padding: 10px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #FFFFFF;
+    background-color: #000000;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+    background-color: #333;
+}
+
+.edit-button:active {
+    background-color: #555;
+}
+
+.tent-red {
+    color: #ff0000;
+    font-size: 14px;
+    margin-top: 15px;
+    text-align: right;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+    font-weight: bold;
+}
+
+
+.time-input[readonly],
+.remarks-input[readonly] {
+    border-color: transparent;
+    background-color: inherit;
+    color: inherit;
+    cursor: default;
+    pointer-events: none;
+}
+
+
+.time-input[readonly]:focus,
+.remarks-input[readonly]:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+
+
+@media screen and (min-width: 1400px) and (max-width: 1540px) {
+    .content-wrapper {
+        max-width: 900px;
+        padding: 0 20px;
+    }
+
+    .detail-row {
+        padding: 20px 35px;
+    }
+
+    .detail-label {
+        width: 240px;
+    }
+
+    .time-inputs {
+        gap: 50px;
+    }
+
+    .remarks-input {
+        width: 60%;
+        margin-right: 40px;
+    }
+
+    .button-wrapper {
+        margin-top: 25px;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 850px) {
+    .content-wrapper {
+        max-width: 700px;
+        padding: 0 15px;
+    }
+
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 20px;
+    }
+
+    .detail-label {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .detail-value {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .time-inputs {
+        flex-direction: row;
+        gap: 20px;
+        flex-wrap: wrap;
+        row-gap: 8px;
+    }
+
+    .time-input {
+        width: 100px;
+    }
+
+    .remarks-input {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .button-wrapper {
+        width: 100%;
+        justify-content: center;
+    }
+}

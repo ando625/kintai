@@ -5,25 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'COACHTECH')</title>
     <link rel="stylesheet" href="{{ asset('css/sanitize.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/unified.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/unified.css') }}">
     @yield('styles')
 </head>
 <body>
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <img src="{{ asset('images/logo.png') }}" alt="COACHTECH">
+                <a href="{{ route('admin.index') }}">
+                    <img src="{{ asset('images/logo.svg') }}" alt="COACHTECH">
+                </a>
             </div>
             <nav class="nav">
                 <ul class="nav-list">
                     <li class="nav-item">
-                        <a href="{{ route('attendance.index') }}" class="nav-link">勤怠一覧</a>
+                        <a href="{{ route('admin.index') }}" class="nav-link">勤怠一覧</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('staff.index') }}" class="nav-link">スタッフ一覧</a>
+                        <a href="{{ route('admin.staff.list') }}" class="nav-link">スタッフ一覧</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('application.index') }}" class="nav-link">申請一覧</a>
+                        <a href="{{ route('admin.requests') }}" class="nav-link">申請一覧</a>
                     </li>
                     <li class="nav-item">
                         <form action="{{ route('logout') }}" method="POST" class="logout-form">

@@ -1,0 +1,160 @@
+/* 全体コンテナ */
+.application-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* ページタイトル */
+.page-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: #000000;
+    padding-left: 15px;
+    border-left: 8px solid #000000;
+}
+
+/* タブコンテナ */
+.border__list.tab-container {
+    display: flex;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #E1E1E1;
+}
+
+.tab-item {
+    list-style: none;
+}
+
+/* タブボタン */
+.tab-button {
+    display: block;
+    padding: 15px 40px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 16px;
+    color: #666;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    top: 2px;
+}
+
+.tab-button.active {
+    color: #000;
+    border-bottom: 3px solid #000;
+    font-weight: 500;
+}
+
+.tab-button:hover {
+    color: #000;
+}
+
+/* テーブルラッパー */
+.table-wrapper {
+    overflow-x: auto;
+    background-color: #E1E1E1;
+    border-radius: 8px;
+}
+
+/* テーブル */
+.application-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #FFFFFF;
+}
+
+.application-table th {
+    padding: 20px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: #737373;
+    border-bottom: 3px solid #E1E1E1;
+}
+
+.application-table tbody tr {
+    border-bottom: 3px solid #E1E1E1;
+    transition: background-color 0.2s ease;
+}
+
+.application-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+.application-table td {
+    padding: 20px 15px;
+    font-size: 14px;
+    color: #737373;
+}
+
+/* 詳細リンク */
+.detail-link {
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+    transition: opacity 0.2s ease;
+}
+
+.detail-link:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
+
+/* PC: 1400px～1540px */
+@media screen and (min-width: 1400px) and (max-width: 1540px) {
+    .application-container {
+        max-width: 900px;
+        padding: 50px 40px;
+    }
+
+    .page-title {
+        font-size: 34px;
+        margin-bottom: 50px;
+        padding-left: 20px;
+        border-left-width: 10px;
+    }
+
+    .tab-button {
+        padding: 18px 50px;
+        font-size: 18px;
+    }
+
+    .application-table th,
+    .application-table td {
+        padding: 25px 20px;
+        font-size: 16px;
+    }
+}
+
+/* タブレット: 768px～850px */
+@media screen and (min-width: 768px) and (max-width: 850px) {
+    .application-container {
+        max-width: 100%;
+        padding: 30px 15px;
+    }
+
+    .page-title {
+        font-size: 24px;
+        margin-bottom: 30px;
+        padding-left: 12px;
+        border-left-width: 6px;
+    }
+
+    .tab-button {
+        padding: 12px 25px;
+        font-size: 14px;
+    }
+
+    .application-table th,
+    .application-table td {
+        padding: 15px 10px;
+        font-size: 12px;
+    }
+}

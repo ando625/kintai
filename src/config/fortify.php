@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/',
+    'home' => '/user/check-in',
 
     /*
     |--------------------------------------------------------------------------
@@ -86,7 +86,7 @@ return [
     |
     */
 
-    'prefix' => '',
+    'prefix' => 'user',
 
     'domain' => null,
 
@@ -115,7 +115,7 @@ return [
     */
 
     'limiters' => [
-        'login' => 'login',
+        'login' => 'user/login',
         'two-factor' => 'two-factor',
     ],
 

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,32 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
         ];
+    }
+
+
+
+    public function messages()
+    {
+        return [
+            'email.required' => 'メールアドレスを入力してください',
+            'password.required' => 'パスワードを入力してください',
+        ];
+    }
+
+    public function authenticate(): void
+    {
+        $credentials = $this->only('email', 'password');
+
+        // attempt() はDB存在確認もパスワードチェックもしてくれる
+        if (!Auth::guard('web')->attempt($credentials)) {
+            throw ValidationException::withMessages([
+                'email' => 'ログイン情報が登録されていません',
+            ]);
+        }
+
+        $this->session()->regenerate();
     }
 }
