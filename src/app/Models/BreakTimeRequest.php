@@ -18,7 +18,7 @@ class BreakTimeRequest extends Model
         'after_end',
     ];
 
-    public function AttendanceRequest()
+    public function attendanceRequest()
     {
         return $this->belongsTo(AttendanceRequest::class);
     }

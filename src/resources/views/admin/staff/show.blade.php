@@ -40,9 +40,9 @@
                         @foreach ($daysInMonth as $att)
                         <tr @if($att->work_date->isWeekend()) class="weekend" @endif>
                             <td>{{ $att->work_date->translatedFormat('m/d(D)') }}</td>
-                            <td>{{ $att->clock_in ? $att->clock_in->format('H:i') : '-' }}</td>
-                            <td>{{ $att->clock_out ? $att->clock_out->format('H:i') : '-' }}</td>
-                            <td>{{ $att->break_hours_formatted ?? '-' }}</td>
+                            <td>{{ $att->clock_in ? $att->clock_in->format('H:i') : '' }}</td>
+                            <td>{{ $att->clock_out ? $att->clock_out->format('H:i') : '' }}</td>
+                            <td>{{ $att->break_hours_formatted ?? '' }}</td>
                             <td>{{ $att->work_hours_formatted ?? '' }}</td>
                             <td>
                                 @if($att->id)

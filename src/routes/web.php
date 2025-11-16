@@ -69,9 +69,9 @@ Route::prefix('admin')->name('admin.')->group(function (){
             Route::get('/requests', [AdminAttendanceController::class, 'requests'])->name('requests');
 
             //修正申請詳細画面
-            Route::get('/requests/approve/{id}', [AdminAttendanceController::class, 'showRequest'])->name('requests.approve');
+            Route::get('/requests/approve/{id}', [AdminAttendanceController::class, 'showRequest'])->name('requests.approve.show');
 
-            Route::patch('/requests/approve/{id}', [AdminAttendanceController::class, 'approveRequest'])->name('requests.approve');
+            Route::patch('/requests/approve/{id}', [AdminAttendanceController::class, 'approveRequest'])->name('requests.approve.update');
 
 
 

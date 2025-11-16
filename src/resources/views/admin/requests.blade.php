@@ -52,7 +52,7 @@
                     <td>{{ $request->attendance->work_date->format('Y/m/d') }}</td>
                     <td>{{ $request->after_remarks }}</td>
                     <td>{{ $request->created_at->format('Y/m/d') }}</td>
-                    <td><a href="{{ route('admin.requests.approve', ['id' => $request->id]) }}" class="detail-link">詳細</a></td>
+                    <td><a href="{{ route('admin.requests.approve.show', ['id' => $request->id]) }}" class="detail-link">詳細</a></td>
                 </tr>
                 @empty
                 <tr>

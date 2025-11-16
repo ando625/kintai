@@ -40,8 +40,8 @@
                 @foreach ($attendances as $att)
                 <tr>
                     <td>{{ $att->user->name }}</td>
-                    <td>{{ $att->clock_in ? $att->clock_in->format('H:i') : '-' }}</td>
-                    <td>{{ $att->clock_out ? $att->clock_out->format('H:i') : '-' }}</td>
+                    <td>{{ $att->clock_in ? $att->clock_in->format('H:i') : '' }}</td>
+                    <td>{{ $att->clock_out ? $att->clock_out->format('H:i') : '' }}</td>
                     <td>{{ $att->break_hours_formatted }}</td>
                     <td>{{ $att->work_hours_formatted }}</td>
                     <td><a href="{{ route('admin.attendance.show', $att->id) }}" class="detail-link">詳細</a></td>

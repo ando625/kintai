@@ -26,8 +26,8 @@
                 <div class="detail-row">
                     <dt class="detail-label">日付</dt>
                     <dd class="detail-value">
-                        <span class="date-year">{{ \Carbon\Carbon::parse($attendanceRequest->work_date)->format('Y年') }}</span>
-                        <span class="date-month">{{ \Carbon\Carbon::parse($attendanceRequest->work_date)->format('n月j日') }}</span>
+                        <span class="date-year">{{ $attendanceRequest->attendance->work_date->format('Y年') }}</span>
+                        <span class="date-month">{{ $attendanceRequest->attendance->work_date->format('n月j日') }}</span>
                     </dd>
                 </div>
 
@@ -79,7 +79,7 @@
         </section>
 
         <div class="button-wrapper">
-            <form action="{{ route('admin.requests.approve', $attendanceRequest->id) }}" method="POST">
+            <form action="{{ route('admin.requests.approve.update', $attendanceRequest->id) }}" method="POST">
                 @csrf
                 @method('PATCH')
                 <button type="submit" 

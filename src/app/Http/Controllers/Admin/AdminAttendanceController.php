@@ -43,12 +43,11 @@ class AdminAttendanceController extends Controller
         return view('admin.index', compact('attendances', 'targetDate', 'today', 'prevDate', 'nextDate'));
     }
 
+    //ユーザー単位での月表示
     public function staffAttendance($id, Request $request)
     {
-        // ユーザー取得
         $user = User::findOrFail($id);
 
-        // 表示する月を決定
         $currentMonth = $request->query('month')
             ? Carbon::parse($request->query('month'))
             : Carbon::now();
@@ -56,17 +55,14 @@ class AdminAttendanceController extends Controller
         $startOfMonth = $currentMonth->copy()->startOfMonth();
         $endOfMonth   = $currentMonth->copy()->endOfMonth();
 
-        // 勤怠データ取得（日付でキー化）
+        // Attendance 取得（breakTimes と一緒に）
         $attendances = Attendance::with('breakTimes')
             ->where('user_id', $user->id)
             ->whereBetween('work_date', [$startOfMonth, $endOfMonth])
             ->orderBy('work_date', 'asc')
             ->get()
-            ->keyBy(function ($item) {
-                return $item->work_date->format('Y-m-d');
-            });
+            ->keyBy(fn($item) => $item->work_date->format('Y-m-d'));
 
-        // 月の日付を1日ずつループして空白データも生成
         $daysInMonth = [];
         $date = $startOfMonth->copy();
 
@@ -74,24 +70,40 @@ class AdminAttendanceController extends Controller
             $workDate = $date->format('Y-m-d');
 
             if ($attendances->has($workDate)) {
-                // DBにある日
-                $daysInMonth[] = $attendances->get($workDate);
+                $att = $attendances->get($workDate);
+
+                // BreakTime を HH:MM 形式で結合
+                $breaks = $att->breakTimes->map(function ($b) {
+                    if ($b->break_start && $b->break_end) {
+                        return Carbon::parse($b->break_start)->format('H:i') . '-' . Carbon::parse($b->break_end)->format('H:i');
+                    }
+                    return null;
+                })->filter()->values()->all();
+
+                // 休憩をまとめて文字列化
+                $att->break_hours_formatted = $breaks ? implode(' / ', $breaks) : '-';
+
+                // 実働時間（HH:MM）も更新
+                $att->work_hours_formatted = $att->work_hours_formatted; // アクセサで計算済み
+
+                $daysInMonth[] = $att;
             } else {
-                // DBにない日 → 空オブジェクト生成
+                // DBにない日 → 空オブジェクト
                 $daysInMonth[] = new Attendance([
-                    'id' => null, // 詳細ボタン押せないように null
+                    'id' => null,
                     'work_date' => $date,
                     'clock_in' => null,
                     'clock_out' => null,
                     'remarks' => null,
                     'breakTimes' => collect([]),
+                    'break_hours_formatted' => '-',
+                    'work_hours_formatted' => '',
                 ]);
             }
 
             $date->addDay();
         }
 
-        // 前月・翌月リンク
         $prevMonth = $currentMonth->copy()->subMonth()->format('Y-m');
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
@@ -106,25 +118,56 @@ class AdminAttendanceController extends Controller
 
     public function show($id)
     {
-        $attendance = Attendance::with(['user', 'breakTimes'])->findOrFail($id);
+        $attendance = Attendance::with(['user', 'breakTimes', 'latestRequest.breakTimeRequests'])->findOrFail($id);
         $user = $attendance->user ?? new User(['name' => '未登録']);
 
+        //申請中か判定
+        $isPending = $attendance->latestRequest?->status === 'pending';
 
+        $display = [
+            'clock_in' => $attendance->latestRequest?->after_clock_in
+                ? Carbon::parse($attendance->latestRequest->after_clock_in)->format('H:i')
+                : ($attendance->clock_in ? $attendance->clock_in->format('H:i') : ''),
 
-        // breakTimes を ID順に並べ替え
-        $breakTimes = $attendance->breakTimes->sortBy('id')->values()->all();
+            'clock_out' => $attendance->latestRequest?->after_clock_out
+                ? Carbon::parse($attendance->latestRequest->after_clock_out)->format('H:i')
+                : ($attendance->clock_out ? $attendance->clock_out->format('H:i') : ''),
 
-        // 最低2行保証（DBに1件しかなければ null を追加して2件にする）
-        while (count($breakTimes) < 2) {
-            $breakTimes[] = (object)[
-                'break_start' => null,
-                'break_end' => null,
+            'remarks' => $attendance->latestRequest?->after_remarks ?? $attendance->remarks,
+
+            'breaks' => [],
+        ];
+
+        //休憩データを配列に詰める
+        $breakTimes = $attendance->breakTimes->sortBy('id')->values();
+
+        foreach ($breakTimes as $i => $break) {
+
+            //修正申請のbreakTimeRequest
+            $breakRequest = $attendance->latestRequest?->breakTimeRequests->get($i);
+
+            $start = $breakRequest?->after_start ?? $break->break_start;
+            $end   = $breakRequest?->after_end   ?? $break->break_end;
+
+            //修正申請中で両方空ならスキップ
+            if ($isPending && empty($start) && empty($end)) {
+                continue;
+            }
+
+            $display['breaks'][] = [
+                'start' => $start ? Carbon::parse($start)->format('H:i') : '',
+                'end'   => $end   ? Carbon::parse($end)->format('H:i') : '',
             ];
         }
 
-        return view('admin.show', compact('attendance', 'user', 'breakTimes'));
-    }
+        // ===== ここが最重要 =====
+        // ループの「外」で必ず 2 件にそろえる
+        while (count($display['breaks']) < 2) {
+            $display['breaks'][] = ['start' => '', 'end' => ''];
+        }
 
+        return view('admin.show', compact('attendance', 'user', 'display', 'isPending'));
+    }
 
     public function update(AmendmentRequest $request, $id)
     {
@@ -182,13 +225,13 @@ class AdminAttendanceController extends Controller
         //承認待ち
         $pendingRequests = AttendanceRequest::with('attendance', 'user')
             ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
         //承認済み
         $approvedRequests = AttendanceRequest::with('attendance', 'user')
             ->where('status', 'approved')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
 
@@ -206,55 +249,50 @@ class AdminAttendanceController extends Controller
 
     }
 
-    // 修正申請承認処理
     public function approveRequest(Request $request, $id)
     {
-        // AttendanceRequest を取得（ユーザーと休憩も一緒に）
+        // AttendanceRequest を取得（休憩とユーザーも取得）
         $attendanceRequest = AttendanceRequest::with(['breakTimeRequests', 'user'])->findOrFail($id);
         $user = $attendanceRequest->user;
 
-        // 該当ユーザーの勤怠データ取得
-        $attendance = $user->attendances()->where('work_date', $attendanceRequest->work_date)->first();
+        // 対応する Attendance を取得（必ず存在する前提）
+        $attendance = Attendance::findOrFail($attendanceRequest->attendance_id);
 
-        if ($attendance) {
-            // 勤怠本体の更新（必須項目）
-            $attendance->clock_in = $attendanceRequest->after_clock_in;
-            $attendance->clock_out = $attendanceRequest->after_clock_out;
-            $attendance->remarks = $attendanceRequest->after_remarks;
-            $attendance->save();
+        // 勤怠本体を更新
+        $attendance->update([
+            'clock_in'  => $attendanceRequest->after_clock_in,
+            'clock_out' => $attendanceRequest->after_clock_out,
+            'remarks'   => $attendanceRequest->after_remarks,
+        ]);
 
-            // 休憩データの更新 or 削除
-            foreach ($attendanceRequest->breakTimeRequests as $btr) {
-                $breakTime = $attendance->breakTimes()->where('id', $btr->break_time_id)->first();
+        // 休憩の更新
+        foreach ($attendanceRequest->breakTimeRequests as $btr) {
+            $breakTime = $attendance->breakTimes()->where('id', $btr->break_time_id)->first();
 
+            if (empty($btr->after_start) && empty($btr->after_end)) {
                 // 両方空なら削除
-                if (empty($btr->after_start) && empty($btr->after_end)) {
-                    if ($breakTime) {
-                        $breakTime->delete();
-                    }
+                $breakTime?->delete();
+            } else {
+                // 更新または新規作成
+                if ($breakTime) {
+                    $breakTime->update([
+                        'break_start' => $btr->after_start,
+                        'break_end'   => $btr->after_end,
+                    ]);
                 } else {
-                    // どちらかに値があれば更新 or 新規作成
-                    if ($breakTime) {
-                        $breakTime->update([
-                            'break_start' => $btr->after_start,
-                            'break_end'   => $btr->after_end,
-                        ]);
-                    } else {
-                        $attendance->breakTimes()->create([
-                            'break_start' => $btr->after_start,
-                            'break_end'   => $btr->after_end,
-                        ]);
-                    }
+                    $attendance->breakTimes()->create([
+                        'break_start' => $btr->after_start,
+                        'break_end'   => $btr->after_end,
+                    ]);
                 }
             }
         }
 
-        // 申請ステータスを承認済みに
-        $attendanceRequest->status = 'approved';
-        $attendanceRequest->save();
+        // 申請を承認済みに
+        $attendanceRequest->update(['status' => 'approved']);
 
-        // 承認完了メッセージでリダイレクト
-        return redirect()->route('admin.requests-approve')->with('success', '承認しました。');
+        return redirect()
+            ->route('admin.requests.approve.show', $attendanceRequest->id)
+            ->with('success', '承認しました。');
     }
-
 }

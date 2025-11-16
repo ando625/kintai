@@ -1,5 +1,3 @@
-
-
 @extends('layouts.app')
 
 @section('title', '勤怠詳細画面 - COACHTECH')
@@ -46,11 +44,11 @@
                         <dt class="detail-label">出勤・退勤</dt>
                         <dd class="detail-value time-inputs">
                             <input type="text" name="clock_in" class="time-input"
-                                value="{{ old('clock_in', $attendance->clock_in?->format('H:i')) }}"
+                                value="{{ old('clock_in', $display['clock_in']) }}"
                                 @if($isPending) readonly @endif>
                             <span class="time-separator">～</span>
                             <input type="text" name="clock_out" class="time-input"
-                                value="{{ old('clock_out', $attendance->clock_out?->format('H:i')) }}"
+                                value="{{ old('clock_out', $display['clock_out']) }}"
                                 @if($isPending) readonly @endif>
                             @error('clock_in') <span class="text-red">{{ $message }}</span> @enderror
                             @error('clock_out') <span class="text-red">{{ $message }}</span> @enderror
@@ -58,30 +56,36 @@
                     </div>
 
                     <!-- 休憩 -->
-                    @foreach ($breakTimes as $i => $break)
-                        @if($i === 1 && $isPending && empty($break->break_start) && empty($break->break_end))
-                            @continue
-                        @endif
-                        <div class="detail-row">
-                            <dt class="detail-label">休憩{{ $i + 1 }}</dt>
-                            <dd class="detail-value time-inputs">
-                                <input type="text" name="break_times[{{ $i }}][start]" class="time-input"
-                                    value="{{ old("break_times.$i.start", $break->break_start ? \Carbon\Carbon::parse($break->break_start)->format('H:i') : '') }}"
-                                    @if($isPending) readonly @endif>
-                                <span class="time-separator">～</span>
-                                <input type="text" name="break_times[{{ $i }}][end]" class="time-input"
-                                    value="{{ old("break_times.$i.end", $break->break_end ? \Carbon\Carbon::parse($break->break_end)->format('H:i') : '') }}"
-                                    @if($isPending) readonly @endif>
-                                @error("break_times.$i") <span class="text-red">{{ $message }}</span> @enderror
-                            </dd>
-                        </div>
-                    @endforeach
+                    <!-- 休憩1 -->
+                    <div class="detail-row">
+                        <dt class="detail-label">休憩1</dt>
+                        <dd class="detail-value time-inputs">
+                            <input type="text" name="break_times[0][start]" class="time-input"
+                            value="{{ old('break_times.0.start', $display['breaks'][0]['start'] ?? '') }}"@if($isPending) readonly @endif>
+                            <span class="time-separator">～</span>
+                            <input type="text" name="break_times[0][end]" class="time-input"
+                            value="{{ old('break_times.0.end', $display['breaks'][0]['end'] ?? '') }}"@if($isPending) readonly @endif>
+                        </dd>
+                    </div>
+                    <!-- 休憩2 -->
+                    @if(!$isPending || !empty($display['breaks'][1]['start']) || !empty($display['breaks'][1]['end']))
+                    <div class="detail-row">
+                        <dt class="detail-label">休憩2</dt>
+                        <dd class="detail-value time-inputs">
+                            <input type="text" name="break_times[1][start]" class="time-input"
+                            value="{{ old('break_times.1.start', $display['breaks'][1]['start'] ?? '') }}"@if($isPending) readonly @endif>
+                            <span class="time-separator">～</span>
+                            <input type="text" name="break_times[1][end]" class="time-input"
+                            value="{{ old('break_times.1.end', $display['breaks'][1]['end'] ?? '') }}"@if($isPending) readonly @endif>
+                        </dd>
+                    </div>
+                    @endif
 
                     <!-- 備考 -->
                     <div class="detail-row">
                         <dt class="detail-label">備考</dt>
                         <dd class="detail-value">
-                            <textarea name="remarks" class="remarks-input" @if($isPending) readonly @endif>{{ old('remarks', $attendance->remarks) }}</textarea>
+                            <textarea name="remarks" class="remarks-input" @if($isPending) readonly @endif>{{ old('remarks', $display['remarks']) }}</textarea>
                             @error('remarks') <span class="text-red">{{ $message }}</span> @enderror
                         </dd>
                     </div>

@@ -71,29 +71,54 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        /*指定された勤怠データを取得
-        $attendance = Attendance::with(['breakTimes', 'latestRequest'])
-            ->where('user_id', auth()->id()) // 自分の勤怠だけ
+        $attendance = Attendance::with(['breakTimes', 'latestRequest.breakTimeRequests'])
+            ->where('user_id', $user->id)
             ->findOrFail($id);
 
-        return view('user.show', compact('attendance', 'user'));*/
+        $display = [
+            'clock_in'  => $attendance->latestRequest?->after_clock_in
+                ? \Carbon\Carbon::parse($attendance->latestRequest->after_clock_in)->format('H:i')
+                : ($attendance->clock_in ? $attendance->clock_in->format('H:i') : ''),
+            'clock_out' => $attendance->latestRequest?->after_clock_out
+                ? \Carbon\Carbon::parse($attendance->latestRequest->after_clock_out)->format('H:i')
+                : ($attendance->clock_out ? $attendance->clock_out->format('H:i') : ''),
+            'remarks'   => $attendance->latestRequest?->after_remarks ?? $attendance->remarks,
+            'breaks'    => [],
+        ];
 
-        $attendance = Attendance::with(['breakTimes', 'latestRequest'])
-            ->where('user_id', auth()->id())
-            ->findOrFail($id);
+        $breakTimes = $attendance->breakTimes;
+        $isPending = $attendance->latestRequest?->status === 'pending';
 
-        // ID順に並び替え
-        $breakTimes = $attendance->breakTimes->sortBy('id')->values();
-
-        // 最低2行（空欄）を保証
-        while ($breakTimes->count() < 2) {
-            $breakTimes->push((object)[
-                'break_start' => null,
-                'break_end' => null,
-            ]);
+        // 最新申請がある場合、breakTimeRequests を優先
+        if ($attendance->latestRequest?->breakTimeRequests->count() > 0) {
+            foreach ($attendance->latestRequest->breakTimeRequests as $i => $breakRequest) {
+                $display['breaks'][] = [
+                    'start' => $breakRequest->after_start
+                        ? \Carbon\Carbon::parse($breakRequest->after_start)->format('H:i')
+                        : ($breakTimes[$i]->break_start ? \Carbon\Carbon::parse($breakTimes[$i]->break_start)->format('H:i') : ''),
+                    'end'   => $breakRequest->after_end
+                        ? \Carbon\Carbon::parse($breakRequest->after_end)->format('H:i')
+                        : ($breakTimes[$i]->break_end ? \Carbon\Carbon::parse($breakTimes[$i]->break_end)->format('H:i') : ''),
+                ];
+            }
+        } else {
+            // 最新申請がない場合は attendance 側の breakTimes をそのまま
+            foreach ($breakTimes as $break) {
+                $display['breaks'][] = [
+                    'start' => $break->break_start ? \Carbon\Carbon::parse($break->break_start)->format('H:i') : '',
+                    'end'   => $break->break_end ? \Carbon\Carbon::parse($break->break_end)->format('H:i') : '',
+                ];
+            }
         }
 
-        return view('user.show', compact('attendance', 'user', 'breakTimes'));
+        // 編集可能モードなら最低2行保証
+        if (!$isPending && count($display['breaks']) < 2) {
+            while (count($display['breaks']) < 2) {
+                $display['breaks'][] = ['start' => '', 'end' => ''];
+            }
+        }
+
+        return view('user.show', compact('attendance', 'user', 'display'));
     }
 
     public function storeRequest(AmendmentRequest $request, $id)
@@ -148,7 +173,7 @@ class AttendanceController extends Controller
         $pendingRequests = AttendanceRequest::with('attendance', 'user')
             ->where('user_id', $user->id)
             ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->distinct('id')
             ->get();
 
@@ -156,7 +181,7 @@ class AttendanceController extends Controller
         $approvedRequests = AttendanceRequest::with('attendance', 'user')
             ->where('user_id', $user->id)
             ->where('status', 'approved')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->distinct('id')
             ->get();
 
