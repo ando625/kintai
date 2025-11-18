@@ -25,13 +25,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-/* 🌱 トップページ → 一般ログインへリダイレクト
-Route::get('/', function () {
-    return view('welcome', [
-        'userLoginUrl' => route('login'),
-        'adminLoginUrl' => route('admin.login'),
-    ]);
-});*/
+
 
 Route::get('/', function () {
     return view('auth.login'); // 一般ユーザー用ログイン画面を表示
@@ -53,6 +47,7 @@ Route::prefix('admin')->name('admin.')->group(function (){
             Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
             // 管理者トップページ（AttendanceControllerを使用）
             Route::get('/index', [AdminAttendanceController::class, 'index'])->name('index');
+
             //管理者側staff詳細ページ
             Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'staffAttendance'])->name('staff.show');
 
@@ -73,11 +68,9 @@ Route::prefix('admin')->name('admin.')->group(function (){
 
             Route::patch('/requests/approve/{id}', [AdminAttendanceController::class, 'approveRequest'])->name('requests.approve.update');
 
+            //CSV
+            Route::get('/attendance/staff/{id}/csv', [AdminAttendanceController::class, 'exportCsv'])->name('attendance.staff.csv');
 
-
-            /*
-            Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AttendanceRequestController::class, 'approve'])->name('request.approve');
-            */
 
     });
 });

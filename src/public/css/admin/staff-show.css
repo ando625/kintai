@@ -129,6 +129,24 @@
     transition: background-color 0.3s;
 }
 
+.csv-button-wrapper{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+
+}
+
+.csv-button {
+    padding: 8px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #FFFFFF;
+    background-color: #000000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
 
 

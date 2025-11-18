@@ -361,6 +361,37 @@ docker compose up -d --build
 
 
 ---
+## 4. 勤怠 CSV 出力について
+
+管理画面の「CSV出力」ボタンを押すと、選択したユーザーの指定した月の勤怠一覧情報が CSV 形式でダウンロードできます。
+ダウンロードした CSV は Excel などで開け、日ごとの勤怠を一覧で確認可能です。
+
+
+### CSVの構成
+
+| 番号 | 内容 | 例 |
+|------|------|----|
+| 1行目 | ユーザー名：どのユーザーの勤怠かを示すタイトル行 | ユーザー名,西 伶奈 |
+| 2行目 | 列のヘッダー：各列が何を表すか | 日付,出勤,退勤,休憩,合計 |
+| 3行目以降 | 日ごとの勤怠情報：1日ごとの勤務データが1行ずつ並ぶ | 2025/11/01,09:14,18:40,1:10,8:16<br>2025/11/02,09:30,18:30,0:50,8:10 |
+
+ユーザー名,西 伶奈
+日付,出勤,退勤,休憩,合計
+2025/11/01,09:14,18:40,1:10,8:16
+2025/11/02,09:30,18:30,0:50,8:10
+2025/11/03,09:16,18:30,1:10,8:04
+...
+
+### 列の意味
+
+| 列名       | 内容                                      |
+|------------|-----------------------------------------|
+| 日付       | 勤務日                                    |
+| 出勤       | 出勤時刻（HH:MM形式）                     |
+| 退勤       | 退勤時刻（HH:MM形式）                     |
+| 休憩   | その日の休憩時間の合計（HH:MM形式）       |
+| 合計   | 実働時間（出勤〜退勤 − 休憩）            |
+
 
 
 
@@ -368,6 +399,87 @@ docker compose up -d --build
 ---
 
 ## 5. テーブル
+
+### users テーブル
+
+| カラム名   | 型              | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY |
+|------------|-----------------|-------------|------------|----------|--------------|
+| id         | unsigned bigint | ○           |            | ○        |              |
+| name       | varchar(255)    |             |            | ○        |              |
+| email      | varchar(255)    |             | ○          | ○        |              |
+| password   | varchar(255)    |             |            | ○        |              |
+| created_at | timestamp       |             |            |          |              |
+| updated_at | timestamp       |             |            |          |              |
+
+
+### admins テーブル
+
+| カラム名   | 型              | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY |
+|------------|-----------------|-------------|------------|----------|--------------|
+| id         | unsigned bigint | ○           |            | ○        |              |
+| email      | varchar(255)    |             | ○          | ○        |              |
+| password   | varchar(255)    |             |            | ○        |              |
+| created_at | timestamp       |             |            |          |              |
+| updated_at | timestamp       |             |            |          |              |
+
+
+### attendances テーブル
+
+| カラム名   | 型                                      | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY  |
+|------------|------------------------------------------|-------------|------------|----------|---------------|
+| id         | unsigned bigint                          | ○           |            | ○        |               |
+| user_id    | unsigned bigint                          |             |            | ○        | users(id)     |
+| work_date  | date                                     |             |            | ○        |               |
+| clock_in   | time                                     |             |            | ○        |               |
+| clock_out  | time                                     |             |            |          |               |
+| status     | enum(off_duty,working,break,finished)    |             |            | ○        |               |
+| remarks    | text                                     |             |            |          |               |
+| created_at | timestamp                                |             |            | ○        |               |
+| updated_at | timestamp                                |             |            | ○        |               |
+
+### break_times テーブル
+
+| カラム名       | 型              | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY      |
+|----------------|-----------------|-------------|------------|----------|-------------------|
+| id             | unsigned bigint | ○           |            | ○        |                   |
+| attendance_id  | unsigned bigint |             |            | ○        | attendances(id)   |
+| break_start    | time            |             |            |          |                   |
+| break_end      | time            |             |            |          |                   |
+| created_at     | timestamp       |             |            | ○        |                   |
+| updated_at     | timestamp       |             |            | ○        |                   |
+
+### attendance_requests テーブル
+
+| カラム名         | 型                                   | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY      |
+|------------------|---------------------------------------|-------------|------------|----------|-------------------|
+| id               | unsigned bigint                       | ○           |            | ○        |                   |
+| attendance_id    | unsigned bigint                       |             |            | ○        | attendances(id)   |
+| user_id          | unsigned bigint                       |             |            | ○        | users(id)         |
+| admin_id         | unsigned bigint                       |             |            |          | admins(id)        |
+| before_clock_in  | time                                  |             |            |          |                   |
+| before_clock_out | time                                  |             |            |          |                   |
+| after_clock_in   | time                                  |             |            |          |                   |
+| after_clock_out  | time                                  |             |            |          |                   |
+| before_remarks   | text                                  |             |            |          |                   |
+| after_remarks    | text                                  |             |            |          |                   |
+| status           | enum(pending,approved)                |             |            |          |                   |
+| created_at       | timestamp                             |             |            | ○        |                   |
+| updated_at       | timestamp                             |             |            | ○        |                   |
+
+### break_time_requests テーブル
+
+| カラム名                 | 型              | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY                 |
+|--------------------------|-----------------|-------------|------------|----------|------------------------------|
+| id                       | unsigned bigint | ○           |            | ○        |                              |
+| attendance_request_id    | unsigned bigint |             |            | ○        | attendance_requests(id)      |
+| break_time_id            | unsigned bigint |             |            |          | break_times(id)              |
+| before_start             | time            |             |            |          |                              |
+| before_end               | time            |             |            |          |                              |
+| after_start              | time            |             |            |          |                              |
+| after_end                | time            |             |            |          |                              |
+| created_at               | timestamp       |             |            | ○        |                              |
+| updated_at               | timestamp       |             |            | ○        |                              |
+
 
 
 
@@ -474,9 +586,9 @@ docker compose up -d --build
 
 - 本アプリでは「一般ユーザー」と「管理者」の2種類の認証を用意しています。
 - 同一ブラウザで両方にログインするとセッションが混在して不具合が起こる可能性があります。
-- ログイン前に必ず前のアカウントをログアウトしてください。
-- 	•	一般ユーザーの場合：画面右上の「ログアウト」ボタンからログアウト
-	•	管理者の場合：管理画面右上の「ログアウト」ボタンからログアウト
+- **ログイン前に必ず前のアカウントをログアウトしてください。**
+- 一般ユーザーの場合：画面右上の「ログアウト」ボタンからログアウト
+- 管理者の場合：管理画面右上の「ログアウト」ボタンからログアウト
 
 
 #### 補足
@@ -506,12 +618,11 @@ if (Auth::guard('web')->check()) {
 ## 9. テストユーザー
 
 ### 管理者ユーザー
-- 管理者ユーザーログインURL http://localhost/admin/login 
+- 管理者ログインURL: http://localhost/admin/login
 
-
-|------|-----------|-------------|
-|メールアドレス | testadmin@gmail.com |
-| パスワード | testpass |
+| メールアドレス        | パスワード |
+|-----------------------|------------|
+| testadmin2@gmail.com  | testpass   |
 
 
 

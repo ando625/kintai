@@ -57,9 +57,12 @@
             </table>
         </div>
 
-        <div class="csv-button-wrapper">
-            <button class="csv-button">CSV出力</button>
-        </div>
+        <form action="{{ route('admin.attendance.staff.csv', ['id' => $user->id])}}" method="get">
+            <div class="csv-button-wrapper">
+                <input type="hidden" name="month" value="{{ $currentMonth->format('Y-m') }}">
+                <button class="csv-button" type="submit">CSV出力</button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

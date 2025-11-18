@@ -128,7 +128,7 @@
     color: #ff0000;
     font-size: 14px;
     font-weight: normal;
-    margin-top: 0;
+    margin-top: 5px;
     width: 100%;
     display: block;
 }
@@ -208,6 +208,11 @@
     color: inherit;
     cursor: default;
     pointer-events: none;
+    font-size: 16px;
+}
+
+.time-input[readonly]{
+    font-size: 18px;
 }
 
 

@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="detail-row">
-                    <dt class="detail-label">休憩1</dt>
+                    <dt class="detail-label">休憩</dt>
                     <dd class="detail-value">
                         @php
                             $break1 = $attendanceRequest->breakTimeRequests->get(0);
@@ -57,16 +57,19 @@
                 <div class="detail-row">
                     <dt class="detail-label">休憩2</dt>
                     <dd class="detail-value">
-                        @if($break2 && $break2->after_start && $break2->after_end)
-                        <span class="time-item">{{ $break2 && $break2->after_start
-                            ? \Carbon\Carbon::parse($break2->after_start)->format('H:i')
-                            : '' }}</span>
+                        @php
+                            $start2 = $break2?->after_start;
+                            $end2   = $break2?->after_end;
+                        @endphp
+                        <span class="time-item">
+                            {{ $start2 ? \Carbon\Carbon::parse($start2)->format('H:i') : '' }}
+                        </span>
+                        @if ($start2 || $end2)
                         <span class="time-separator">～</span>
-
-                        <span class="time-item">{{ $break2 && $break2->after_end
-                            ? \Carbon\Carbon::parse($break2->after_end)->format('H:i')
-                            : '' }}</span>
                         @endif
+                        <span class="time-item">
+                            {{ $end2 ? \Carbon\Carbon::parse($end2)->format('H:i') : '' }}
+                        </span>
                     </dd>
                 </div>
 

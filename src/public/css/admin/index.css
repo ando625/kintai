@@ -144,9 +144,7 @@
     transition: background-color 0.3s;
 }
 
-/* ----------------------------
-   PC: 1400px～1540px
------------------------------ */
+
 @media (min-width: 1400px) and (max-width: 1540px) {
     .attendance-wrapper {
         max-width: 1000px;
@@ -170,9 +168,7 @@
     }
 }
 
-/* ----------------------------
-   タブレット: 768px～850px
------------------------------ */
+
 @media (min-width: 768px) and (max-width: 850px) {
     .attendance-container {
         padding: 15px;

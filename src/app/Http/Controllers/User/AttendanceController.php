@@ -17,109 +17,125 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-
         $user = Auth::user();
 
-        // 表示する月を決定
-        $currentMonth = $request->query('month')
-            ? Carbon::parse($request->query('month'))
-            : Carbon::now();
-
+        $currentMonth = $request->query('month') ? Carbon::parse($request->query('month')) : Carbon::now();
         $startOfMonth = $currentMonth->copy()->startOfMonth();
         $endOfMonth   = $currentMonth->copy()->endOfMonth();
 
-        // 勤怠データを取得し、日付でキー化
-        $attendances = Attendance::with('breakTimes')
+        $attendances = Attendance::with(['breakTimes', 'latestRequest.breakTimeRequests'])
             ->where('user_id', $user->id)
             ->whereBetween('work_date', [$startOfMonth, $endOfMonth])
             ->orderBy('work_date', 'asc')
             ->get()
-            ->keyBy(function ($item) {
-                return $item->work_date->format('Y-m-d');
-            });
+            ->keyBy(fn($item) => $item->work_date->format('Y-m-d'));
 
-        // 月の日付を1日ずつループして空白データも生成
         $daysInMonth = [];
         $date = $startOfMonth->copy();
 
         while ($date->lte($endOfMonth)) {
             $workDate = $date->format('Y-m-d');
-            $daysInMonth[] = $attendances->get($workDate) ?? new Attendance([
-                'work_date' => $date,
-                'clock_in' => null,
-                'clock_out' => null,
-                'remarks' => null,
-            ]);
+
+            if ($attendances->has($workDate)) {
+                $att = $attendances->get($workDate);
+                $useRequest = $att->latestRequest?->status === 'pending' ? $att->latestRequest : null;
+
+                $breaks = ($useRequest?->breakTimeRequests->count() > 0 ? $useRequest->breakTimeRequests : $att->breakTimes)
+                    ->map(function ($b) use ($useRequest) {
+                        $start = $useRequest ? $b->after_start : $b->break_start;
+                        $end   = $useRequest ? $b->after_end   : $b->break_end;
+                        return ($start && $end) ? Carbon::parse($start)->format('H:i') . '-' . Carbon::parse($end)->format('H:i') : null;
+                    })->filter()->values()->all();
+
+                $att->break_hours_formatted = $breaks ? implode(' / ', $breaks) : '-';
+
+                $clockIn  = $useRequest?->after_clock_in ?? $att->clock_in;
+                $clockOut = $useRequest?->after_clock_out ?? $att->clock_out;
+
+                $workMinutes = 0;
+                if ($clockIn && $clockOut) {
+                    $diff = Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
+                    $breakMinutes = 0;
+                    foreach ($useRequest?->breakTimeRequests ?? $att->breakTimes as $b) {
+                        $start = $useRequest ? $b->after_start : $b->break_start;
+                        $end   = $useRequest ? $b->after_end   : $b->break_end;
+                        if ($start && $end) $breakMinutes += Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
+                    }
+                    $workMinutes = $diff - $breakMinutes;
+                }
+
+                $att->work_hours_formatted = sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60);
+                $daysInMonth[] = $att;
+            } else {
+                $daysInMonth[] = new Attendance([
+                    'id' => null,
+                    'work_date' => $date,
+                    'clock_in' => null,
+                    'clock_out' => null,
+                    'remarks' => null,
+                    'breakTimes' => collect([]),
+                    'break_hours_formatted' => '-',
+                    'work_hours_formatted' => '',
+                ]);
+            }
+
             $date->addDay();
         }
 
-        // 前月・翌月リンク
         $prevMonth = $currentMonth->copy()->subMonth()->format('Y-m');
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
-        return view('user.index', compact(
-            'user',
-            'daysInMonth',
-            'currentMonth',
-            'prevMonth',
-            'nextMonth'
-        ));
-
+        return view('user.index', compact('user', 'daysInMonth', 'currentMonth', 'prevMonth', 'nextMonth'));
     }
 
     public function show($id)
     {
         $user = Auth::user();
-
         $attendance = Attendance::with(['breakTimes', 'latestRequest.breakTimeRequests'])
             ->where('user_id', $user->id)
             ->findOrFail($id);
 
+        $isPending = $attendance->latestRequest?->status === 'pending';
+        $useRequest = $isPending ? $attendance->latestRequest : null;
+
+        $clockIn  = $useRequest?->after_clock_in ?? $attendance->clock_in;
+        $clockOut = $useRequest?->after_clock_out ?? $attendance->clock_out;
+
+        $breakTimes = $useRequest?->breakTimeRequests ?? $attendance->breakTimes;
+        $displayBreaks = [];
+        foreach ($breakTimes as $b) {
+            $start = $useRequest ? $b->after_start : $b->break_start;
+            $end   = $useRequest ? $b->after_end   : $b->break_end;
+            $displayBreaks[] = [
+                'start' => $start ? Carbon::parse($start)->format('H:i') : '',
+                'end'   => $end ? Carbon::parse($end)->format('H:i') : '',
+            ];
+        }
+
+        $workMinutes = 0;
+        if ($clockIn && $clockOut) {
+            $diff = Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
+            $breakMinutes = 0;
+            foreach ($breakTimes as $b) {
+                $start = $useRequest ? $b->after_start : $b->break_start;
+                $end   = $useRequest ? $b->after_end   : $b->break_end;
+                if ($start && $end) $breakMinutes += Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
+            }
+            $workMinutes = $diff - $breakMinutes;
+        }
+
         $display = [
-            'clock_in'  => $attendance->latestRequest?->after_clock_in
-                ? \Carbon\Carbon::parse($attendance->latestRequest->after_clock_in)->format('H:i')
-                : ($attendance->clock_in ? $attendance->clock_in->format('H:i') : ''),
-            'clock_out' => $attendance->latestRequest?->after_clock_out
-                ? \Carbon\Carbon::parse($attendance->latestRequest->after_clock_out)->format('H:i')
-                : ($attendance->clock_out ? $attendance->clock_out->format('H:i') : ''),
-            'remarks'   => $attendance->latestRequest?->after_remarks ?? $attendance->remarks,
-            'breaks'    => [],
+            'clock_in' => $clockIn ? Carbon::parse($clockIn)->format('H:i') : '',
+            'clock_out' => $clockOut ? Carbon::parse($clockOut)->format('H:i') : '',
+            'remarks' => $useRequest?->after_remarks ?? $attendance->remarks,
+            'breaks' => $displayBreaks,
+            'work_hours_formatted' => sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60),
         ];
 
-        $breakTimes = $attendance->breakTimes;
-        $isPending = $attendance->latestRequest?->status === 'pending';
-
-        // 最新申請がある場合、breakTimeRequests を優先
-        if ($attendance->latestRequest?->breakTimeRequests->count() > 0) {
-            foreach ($attendance->latestRequest->breakTimeRequests as $i => $breakRequest) {
-                $display['breaks'][] = [
-                    'start' => $breakRequest->after_start
-                        ? \Carbon\Carbon::parse($breakRequest->after_start)->format('H:i')
-                        : ($breakTimes[$i]->break_start ? \Carbon\Carbon::parse($breakTimes[$i]->break_start)->format('H:i') : ''),
-                    'end'   => $breakRequest->after_end
-                        ? \Carbon\Carbon::parse($breakRequest->after_end)->format('H:i')
-                        : ($breakTimes[$i]->break_end ? \Carbon\Carbon::parse($breakTimes[$i]->break_end)->format('H:i') : ''),
-                ];
-            }
-        } else {
-            // 最新申請がない場合は attendance 側の breakTimes をそのまま
-            foreach ($breakTimes as $break) {
-                $display['breaks'][] = [
-                    'start' => $break->break_start ? \Carbon\Carbon::parse($break->break_start)->format('H:i') : '',
-                    'end'   => $break->break_end ? \Carbon\Carbon::parse($break->break_end)->format('H:i') : '',
-                ];
-            }
-        }
-
-        // 編集可能モードなら最低2行保証
-        if (!$isPending && count($display['breaks']) < 2) {
-            while (count($display['breaks']) < 2) {
-                $display['breaks'][] = ['start' => '', 'end' => ''];
-            }
-        }
-
-        return view('user.show', compact('attendance', 'user', 'display'));
+        return view('user.show', compact('attendance', 'user', 'display', 'isPending'));
     }
+
+
 
     public function storeRequest(AmendmentRequest $request, $id)
     {

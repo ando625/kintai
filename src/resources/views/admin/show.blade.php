@@ -50,27 +50,44 @@
                             <input type="text" name="clock_out" class="time-input"
                                 value="{{ old('clock_out', $display['clock_out']) }}"
                                 @if($isPending) readonly @endif>
-                            @error('clock_in') <span class="text-red">{{ $message }}</span> @enderror
-                            @error('clock_out') <span class="text-red">{{ $message }}</span> @enderror
+                            @if ($errors->has('clock_in') || $errors->has('clock_out'))
+                                <span class="text-red">出勤時間もしくは退勤時間が不適切な値です</span>
+                            @endif
                         </dd>
                     </div>
 
+
                     <!-- 休憩 -->
-                    @foreach ($display['breaks'] as $i => $break)
-                        <div class="detail-row">
-                            <dt class="detail-label">休憩{{ $i + 1 }}</dt>
-                            <dd class="detail-value time-inputs">
-                                <input type="text" name="break_times[{{ $i }}][start]" class="time-input"
-                                    value="{{ old("break_times.$i.start", $break['start']) }}"
-                                    @if($isPending) readonly @endif>
-                                <span class="time-separator">～</span>
-                                <input type="text" name="break_times[{{ $i }}][end]" class="time-input"
-                                    value="{{ old("break_times.$i.end", $break['end']) }}"
-                                    @if($isPending) readonly @endif>
-                                @error("break_times.$i") <span class="text-red">{{ $message }}</span> @enderror
-                            </dd>
-                        </div>
-                    @endforeach
+                    <div class="detail-row">
+                        <dt class="detail-label">休憩</dt>
+                        <dd class="detail-value time-inputs">
+                            <input type="text" name="break_times[0][start]" class="time-input"
+                            value="{{ old('break_times.0.start', $display['breaks'][0]['start'] ?? '') }}"@if($isPending) readonly @endif>
+                            <span class="time-separator">～</span>
+                            <input type="text" name="break_times[0][end]" class="time-input"
+                            value="{{ old('break_times.0.end', $display['breaks'][0]['end'] ?? '') }}"@if($isPending) readonly @endif>
+                            @error('break_times.0')
+                                <span class="text-red">{{ $message }}</span>
+                            @enderror
+                        </dd>
+                    </div>
+                    <!-- 休憩2 -->
+                    @if(!$isPending || !empty($display['breaks'][1]['start']) || !empty($display['breaks'][1]['end']))
+                    <div class="detail-row">
+                        <dt class="detail-label">休憩2</dt>
+                        <dd class="detail-value time-inputs">
+                            <input type="text" name="break_times[1][start]" class="time-input"
+                            value="{{ old('break_times.1.start', $display['breaks'][1]['start'] ?? '') }}"@if($isPending) readonly @endif>
+                            <span class="time-separator">～</span>
+                            <input type="text" name="break_times[1][end]" class="time-input"
+                            value="{{ old('break_times.1.end', $display['breaks'][1]['end'] ?? '') }}"@if($isPending) readonly @endif>
+                            @error('break_times.1')
+                                <span class="text-red">{{ $message }}</span>
+                            @enderror
+                        </dd>
+                    </div>
+                    @endif
+
 
                     <!-- 備考 -->
                     <div class="detail-row">

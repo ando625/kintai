@@ -55,8 +55,7 @@ class AdminAttendanceController extends Controller
         $startOfMonth = $currentMonth->copy()->startOfMonth();
         $endOfMonth   = $currentMonth->copy()->endOfMonth();
 
-        // Attendance 取得（breakTimes と一緒に）
-        $attendances = Attendance::with('breakTimes')
+        $attendances = Attendance::with('breakTimes', 'latestRequest')
             ->where('user_id', $user->id)
             ->whereBetween('work_date', [$startOfMonth, $endOfMonth])
             ->orderBy('work_date', 'asc')
@@ -72,23 +71,38 @@ class AdminAttendanceController extends Controller
             if ($attendances->has($workDate)) {
                 $att = $attendances->get($workDate);
 
-                // BreakTime を HH:MM 形式で結合
-                $breaks = $att->breakTimes->map(function ($b) {
-                    if ($b->break_start && $b->break_end) {
-                        return Carbon::parse($b->break_start)->format('H:i') . '-' . Carbon::parse($b->break_end)->format('H:i');
-                    }
-                    return null;
-                })->filter()->values()->all();
+                $useRequest = $att->latestRequest?->status === 'pending' ? $att->latestRequest : null;
 
-                // 休憩をまとめて文字列化
+                // 休憩時間を整形
+                $breaks = ($useRequest?->breakTimeRequests->count() > 0 ? $useRequest->breakTimeRequests : $att->breakTimes)
+                    ->map(function ($b) use ($useRequest) {
+                        $start = $useRequest ? $b->after_start : $b->break_start;
+                        $end   = $useRequest ? $b->after_end   : $b->break_end;
+                        return ($start && $end) ? Carbon::parse($start)->format('H:i') . '-' . Carbon::parse($end)->format('H:i') : null;
+                    })->filter()->values()->all();
+
                 $att->break_hours_formatted = $breaks ? implode(' / ', $breaks) : '-';
 
-                // 実働時間（HH:MM）も更新
-                $att->work_hours_formatted = $att->work_hours_formatted; // アクセサで計算済み
+                // 実働時間計算
+                $clockIn  = $useRequest?->after_clock_in ?? $att->clock_in;
+                $clockOut = $useRequest?->after_clock_out ?? $att->clock_out;
+
+                $workMinutes = 0;
+                if ($clockIn && $clockOut) {
+                    $diff = Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
+                    $breakMinutes = 0;
+                    foreach ($useRequest?->breakTimeRequests ?? $att->breakTimes as $b) {
+                        $start = $useRequest ? $b->after_start : $b->break_start;
+                        $end   = $useRequest ? $b->after_end   : $b->break_end;
+                        if ($start && $end) $breakMinutes += Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
+                    }
+                    $workMinutes = $diff - $breakMinutes;
+                }
+
+                $att->work_hours_formatted = sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60);
 
                 $daysInMonth[] = $att;
             } else {
-                // DBにない日 → 空オブジェクト
                 $daysInMonth[] = new Attendance([
                     'id' => null,
                     'work_date' => $date,
@@ -121,50 +135,43 @@ class AdminAttendanceController extends Controller
         $attendance = Attendance::with(['user', 'breakTimes', 'latestRequest.breakTimeRequests'])->findOrFail($id);
         $user = $attendance->user ?? new User(['name' => '未登録']);
 
-        //申請中か判定
         $isPending = $attendance->latestRequest?->status === 'pending';
+        $useRequest = $isPending ? $attendance->latestRequest : null;
 
-        $display = [
-            'clock_in' => $attendance->latestRequest?->after_clock_in
-                ? Carbon::parse($attendance->latestRequest->after_clock_in)->format('H:i')
-                : ($attendance->clock_in ? $attendance->clock_in->format('H:i') : ''),
+        $clockIn  = $useRequest?->after_clock_in ?? $attendance->clock_in;
+        $clockOut = $useRequest?->after_clock_out ?? $attendance->clock_out;
 
-            'clock_out' => $attendance->latestRequest?->after_clock_out
-                ? Carbon::parse($attendance->latestRequest->after_clock_out)->format('H:i')
-                : ($attendance->clock_out ? $attendance->clock_out->format('H:i') : ''),
+        $breakTimes = $useRequest?->breakTimeRequests ?? $attendance->breakTimes;
 
-            'remarks' => $attendance->latestRequest?->after_remarks ?? $attendance->remarks,
-
-            'breaks' => [],
-        ];
-
-        //休憩データを配列に詰める
-        $breakTimes = $attendance->breakTimes->sortBy('id')->values();
-
-        foreach ($breakTimes as $i => $break) {
-
-            //修正申請のbreakTimeRequest
-            $breakRequest = $attendance->latestRequest?->breakTimeRequests->get($i);
-
-            $start = $breakRequest?->after_start ?? $break->break_start;
-            $end   = $breakRequest?->after_end   ?? $break->break_end;
-
-            //修正申請中で両方空ならスキップ
-            if ($isPending && empty($start) && empty($end)) {
-                continue;
-            }
-
-            $display['breaks'][] = [
+        $displayBreaks = [];
+        foreach ($breakTimes as $b) {
+            $start = $useRequest ? $b->after_start : $b->break_start;
+            $end   = $useRequest ? $b->after_end   : $b->break_end;
+            $displayBreaks[] = [
                 'start' => $start ? Carbon::parse($start)->format('H:i') : '',
-                'end'   => $end   ? Carbon::parse($end)->format('H:i') : '',
+                'end'   => $end ? Carbon::parse($end)->format('H:i') : '',
             ];
         }
 
-        // ===== ここが最重要 =====
-        // ループの「外」で必ず 2 件にそろえる
-        while (count($display['breaks']) < 2) {
-            $display['breaks'][] = ['start' => '', 'end' => ''];
+        $workMinutes = 0;
+        if ($clockIn && $clockOut) {
+            $diff = Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
+            $breakMinutes = 0;
+            foreach ($breakTimes as $b) {
+                $start = $useRequest ? $b->after_start : $b->break_start;
+                $end   = $useRequest ? $b->after_end   : $b->break_end;
+                if ($start && $end) $breakMinutes += Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
+            }
+            $workMinutes = $diff - $breakMinutes;
         }
+
+        $display = [
+            'clock_in'  => $clockIn ? Carbon::parse($clockIn)->format('H:i') : '',
+            'clock_out' => $clockOut ? Carbon::parse($clockOut)->format('H:i') : '',
+            'remarks'   => $useRequest?->after_remarks ?? $attendance->remarks,
+            'breaks'    => $displayBreaks,
+            'work_hours_formatted' => sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60),
+        ];
 
         return view('admin.show', compact('attendance', 'user', 'display', 'isPending'));
     }
@@ -292,7 +299,60 @@ class AdminAttendanceController extends Controller
         $attendanceRequest->update(['status' => 'approved']);
 
         return redirect()
-            ->route('admin.requests.approve.show', $attendanceRequest->id)
-            ->with('success', '承認しました。');
+            ->route('admin.requests.approve.show', $attendanceRequest->id);
     }
+
+    //CSV出力
+    public function exportCsv(Request $request, $id)
+    {
+        //月の取得
+        $month = $request->query('month');
+
+        //対象ユーザー取得
+        $user = User::findOrFail($id);
+
+        //指定月の勤怠取得
+        $attendances = Attendance::where('user_id', $id)
+            ->whereYear('work_date', substr($month, 0, 4))
+            ->whereMonth('work_date', substr($month, 5, 2))
+            ->get();
+
+        //CSVに変換
+        $fileName = "attendance_{$user->id}_{$month}.csv";
+        $handle = fopen('php://temp', 'r+');
+        //文字化け対策
+        fwrite($handle, "\xEF\xBB\xBF");
+
+        fputcsv($handle, ['ユーザー名', $user->name]);
+
+        //CSVヘッダー
+        $csvHeader = [
+            '日付','出勤','退勤','休憩','合計',
+        ];
+        //ヘッダー
+        fputcsv($handle, $csvHeader);
+
+        $csvData = [];
+        foreach ($attendances as $attendance) {
+
+            //CSV本体作成
+            fputcsv($handle, [
+                $attendance->work_date->format('Y-m-d'),
+                $attendance->clock_in ? $attendance->clock_in->format('H:i') : '',
+                $attendance->clock_out ? $attendance->clock_out->format('H:i') : '',
+                $attendance->break_hours_formatted,
+                $attendance->work_hours_formatted,
+            ]);
+        }
+
+        rewind($handle);  //書き込んだデータを先頭に戻す
+        $csv = stream_get_contents($handle);
+
+        return response($csv)
+            ->header('Content-Type', 'text/csv')
+            ->header("Content-Disposition", "attachment; filename={$fileName}");
+    }
+
+
+
 }
