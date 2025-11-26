@@ -45,10 +45,12 @@
     align-items: center;
     border-bottom: 2px solid #E1E1E1;
     padding: 30px 40px;
+    height: 80px;
 }
 
 .detail-row:last-child {
     border-bottom: none;
+    height: 110px;
 }
 
 .detail-label {
@@ -59,6 +61,7 @@
     margin: 0;
     text-align: left;
     flex-shrink: 0;
+    margin-left: 30px;
 }
 
 .detail-value {

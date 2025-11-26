@@ -15,6 +15,10 @@ class Admin extends Authenticatable
         'password',
     ];
 
+    protected $hidden = [
+        'password'
+    ];
+
     //管理者は複数の申請を受け取る
     public function attendancesRequest()
     {

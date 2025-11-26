@@ -28,14 +28,19 @@ class AttendanceRequest extends Model
         'approved' => '承認済み',
     ];
 
+    protected $casts = [
+        'before_clock_in' => 'datetime',
+        'before_clock_out' => 'datetime',
+        'after_clock_in' => 'datetime',
+        'after_clock_out' => 'datetime',
+    ];
+
     //取得アクセサ
     public function getStatusLabelAttribute()
     {
         return self::$statusLabels[$this->status];
     }
 
-    //bladeでの表示
-    //{{ $attendanceRequest->status_label }}
 
     //申請は１人のユーザーが出す
     public function user()

@@ -190,16 +190,6 @@
     text-align: right;
 }
 
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    padding: 12px 20px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    border: 1px solid #c3e6cb;
-    font-weight: bold;
-}
-
 
 .time-input[readonly],
 .remarks-input[readonly] {

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('work_date');
-            $table->time('clock_in');
-            $table->time('clock_out')->nullable();
+            $table->datetime('clock_in');
+            $table->datetime('clock_out')->nullable();
             $table->enum('status',['off_duty', 'working','break', 'finished'])->default('off_duty');
             $table->text('remarks')->nullable();
             $table->timestamps();

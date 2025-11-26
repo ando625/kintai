@@ -21,25 +21,16 @@ class CreateNewUser implements CreatesNewUsers
         $validator = Validator::make($input, [
             'name' => ['required', 'string', 'max:20'],
             'email' => ['required', 'email', 'string', Rule::unique('users', 'email')],
-            'password' => ['required', 'string', 'min:8'],
-            'password_confirmation' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', 'min:8','confirmed'],
         ], [
             'name.required' => 'お名前を入力してください',
             'email.required' => 'メールアドレスを入力してください',
             'email.email' => 'メールアドレスはメール形式で入力してください',
             'email.unique' => 'このメールアドレスはすでに登録されています',
             'password.required' => 'パスワードを入力してください',
-            'password.min' => 'パスワードは８字以上で入力してください',
-            'password_confirmation.required' => '確認用パスワードを入力してください',
-            'password_confirmation.min' => 'パスワードは８字以上で入力してください',
+            'password.min' => 'パスワードは8文字以上で入力してください',
+            'password.confirmed' => 'パスワードと一致しません'
         ]);
-
-        // パスワード一致チェック
-        $validator->after(function ($validator) use ($input) {
-            if (($input['password'] ?? null) !== ($input['password_confirmation'] ?? null)) {
-                $validator->errors()->add('password', 'パスワードと一致しません');
-            }
-        });
 
         $data = $validator->validate();
 

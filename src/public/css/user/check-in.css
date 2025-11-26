@@ -31,13 +31,13 @@
 }
 
 .status-badge.status-working {
-    background-color: #d1d5db;
-    color: #4b5563;
+    background-color: #C8C8C8;
+    color: #696969;
 }
 
 .status-badge.status-break {
-    background-color: #d1d5db;
-    color: #4b5563;
+    background-color: #C8C8C8;
+    color: #696969;
 }
 
 /* 日付表示 */

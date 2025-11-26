@@ -45,7 +45,7 @@ Route::prefix('admin')->name('admin.')->group(function (){
         Route::middleware('auth:admin')->group(function () {
             //管理者ログアウト
             Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
-            // 管理者トップページ（AttendanceControllerを使用）
+            // 管理者トップページ
             Route::get('/index', [AdminAttendanceController::class, 'index'])->name('index');
 
             //管理者側staff詳細ページ

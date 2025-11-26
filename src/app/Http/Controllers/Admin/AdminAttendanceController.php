@@ -22,10 +22,10 @@ class AdminAttendanceController extends Controller
         // 今日の日付
         $today = Carbon::today();
 
-        // 未来の日付指定があったら今日に戻す
+        /* 未来の日付指定があったら今日に戻す
         if ($targetDate->gt($today)) {
             $targetDate = $today;
-        }
+        } */
 
         // 勤怠データ取得
         $attendances = Attendance::with(['user', 'breakTimes'])
@@ -36,9 +36,9 @@ class AdminAttendanceController extends Controller
         $prevDate = $targetDate->copy()->subDay()->toDateString();
         $nextDate = $targetDate->copy()->addDay()->toDateString();
 
-        if ($nextDate > $today->toDateString()) {
+        /*if ($nextDate > $today->toDateString()) {
             $nextDate = null; // 翌日が未来なら非表示にする
-        }
+        }*/
 
         return view('admin.index', compact('attendances', 'targetDate', 'today', 'prevDate', 'nextDate'));
     }
@@ -55,7 +55,8 @@ class AdminAttendanceController extends Controller
         $startOfMonth = $currentMonth->copy()->startOfMonth();
         $endOfMonth   = $currentMonth->copy()->endOfMonth();
 
-        $attendances = Attendance::with('breakTimes', 'latestRequest')
+        //指定つきの勤怠を取得（修正申請は無視、DBの最新値だけ）
+        $attendances = Attendance::with('breakTimes')
             ->where('user_id', $user->id)
             ->whereBetween('work_date', [$startOfMonth, $endOfMonth])
             ->orderBy('work_date', 'asc')
@@ -69,39 +70,7 @@ class AdminAttendanceController extends Controller
             $workDate = $date->format('Y-m-d');
 
             if ($attendances->has($workDate)) {
-                $att = $attendances->get($workDate);
-
-                $useRequest = $att->latestRequest?->status === 'pending' ? $att->latestRequest : null;
-
-                // 休憩時間を整形
-                $breaks = ($useRequest?->breakTimeRequests->count() > 0 ? $useRequest->breakTimeRequests : $att->breakTimes)
-                    ->map(function ($b) use ($useRequest) {
-                        $start = $useRequest ? $b->after_start : $b->break_start;
-                        $end   = $useRequest ? $b->after_end   : $b->break_end;
-                        return ($start && $end) ? Carbon::parse($start)->format('H:i') . '-' . Carbon::parse($end)->format('H:i') : null;
-                    })->filter()->values()->all();
-
-                $att->break_hours_formatted = $breaks ? implode(' / ', $breaks) : '-';
-
-                // 実働時間計算
-                $clockIn  = $useRequest?->after_clock_in ?? $att->clock_in;
-                $clockOut = $useRequest?->after_clock_out ?? $att->clock_out;
-
-                $workMinutes = 0;
-                if ($clockIn && $clockOut) {
-                    $diff = Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
-                    $breakMinutes = 0;
-                    foreach ($useRequest?->breakTimeRequests ?? $att->breakTimes as $b) {
-                        $start = $useRequest ? $b->after_start : $b->break_start;
-                        $end   = $useRequest ? $b->after_end   : $b->break_end;
-                        if ($start && $end) $breakMinutes += Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
-                    }
-                    $workMinutes = $diff - $breakMinutes;
-                }
-
-                $att->work_hours_formatted = sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60);
-
-                $daysInMonth[] = $att;
+                $daysInMonth[] = $attendances->get($workDate);
             } else {
                 $daysInMonth[] = new Attendance([
                     'id' => null,
@@ -110,11 +79,8 @@ class AdminAttendanceController extends Controller
                     'clock_out' => null,
                     'remarks' => null,
                     'breakTimes' => collect([]),
-                    'break_hours_formatted' => '-',
-                    'work_hours_formatted' => '',
                 ]);
             }
-
             $date->addDay();
         }
 
@@ -153,24 +119,11 @@ class AdminAttendanceController extends Controller
             ];
         }
 
-        $workMinutes = 0;
-        if ($clockIn && $clockOut) {
-            $diff = Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
-            $breakMinutes = 0;
-            foreach ($breakTimes as $b) {
-                $start = $useRequest ? $b->after_start : $b->break_start;
-                $end   = $useRequest ? $b->after_end   : $b->break_end;
-                if ($start && $end) $breakMinutes += Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
-            }
-            $workMinutes = $diff - $breakMinutes;
-        }
-
         $display = [
             'clock_in'  => $clockIn ? Carbon::parse($clockIn)->format('H:i') : '',
             'clock_out' => $clockOut ? Carbon::parse($clockOut)->format('H:i') : '',
             'remarks'   => $useRequest?->after_remarks ?? $attendance->remarks,
             'breaks'    => $displayBreaks,
-            'work_hours_formatted' => sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60),
         ];
 
         return view('admin.show', compact('attendance', 'user', 'display', 'isPending'));
@@ -179,6 +132,11 @@ class AdminAttendanceController extends Controller
     public function update(AmendmentRequest $request, $id)
     {
         $attendance = Attendance::with('breakTimes')->findOrFail($id);
+
+        //承認待ちは更新不可
+        if ($attendance->latestRequest?->status === 'pending') {
+            return redirect()->back();
+        }
 
         // 勤怠本体を更新
         $attendance->update([
@@ -190,26 +148,29 @@ class AdminAttendanceController extends Controller
         // 休憩データ更新
         $breakTimesInput = $request->break_times ?? [];
 
-        foreach ([0, 1] as $i) {
-            $input = $breakTimesInput[$i] ?? ['start' => null, 'end' => null];
-            $start = $input['start'];
-            $end   = $input['end'];
-            $existing = $attendance->breakTimes[$i] ?? null;
+        foreach ($breakTimesInput as $index => $input) {
+            $start = $input['start'] ?? null;
+            $end = $input['end'] ?? null;
 
-            // 両方空なら無視
-            if (empty($start) && empty($end)) {
-                if ($existing && $i === 1) {
-                    $existing->delete(); // 休憩2は削除
+            //既存の休憩レコードがあれば取得
+            $existing = $attendance->breakTimes[$index] ?? null;
+
+            if ($start && $end) {
+                //両方入力されていれば作成or更新
+                if ($existing) {
+                    $existing->update([
+                        'break_start' => $start,
+                        'break_end' => $end
+                    ]);
+                } else {
+                    $attendance->breakTimes()->create([
+                        'break_start' => $start,
+                        'break_end' => $end
+                    ]);
                 }
-                continue;
-            }
-
-            // 片方だけ → エラーは FormRequest で処理済み
-            // 両方入力 → 更新 or 新規作成
-            if ($existing) {
-                $existing->update(['break_start' => $start, 'break_end' => $end]);
             } else {
-                $attendance->breakTimes()->create(['break_start' => $start, 'break_end' => $end]);
+                //入力が空なら既存の休憩は削除
+                $existing?->delete();
             }
         }
 
@@ -274,25 +235,37 @@ class AdminAttendanceController extends Controller
 
         // 休憩の更新
         foreach ($attendanceRequest->breakTimeRequests as $btr) {
-            $breakTime = $attendance->breakTimes()->where('id', $btr->break_time_id)->first();
+            $breakTimeId = $btr->break_time_id;
 
-            if (empty($btr->after_start) && empty($btr->after_end)) {
-                // 両方空なら削除
-                $breakTime?->delete();
-            } else {
-                // 更新または新規作成
-                if ($breakTime) {
-                    $breakTime->update([
-                        'break_start' => $btr->after_start,
-                        'break_end'   => $btr->after_end,
-                    ]);
-                } else {
-                    $attendance->breakTimes()->create([
-                        'break_start' => $btr->after_start,
-                        'break_end'   => $btr->after_end,
-                    ]);
-                }
+            //既存の休憩を取得
+            $existing = $breakTimeId
+                ? $attendance->breakTimes()->find($breakTimeId)
+                : null;
+
+            $start = $btr->after_start;
+            $end = $btr->after_end;
+
+            //入力が空->削除
+            if (empty($start) && empty($end)) {
+                $existing?->delete();
+                continue;
             }
+
+            //入力あり・既存あり-> 更新
+            if ($existing) {
+                $existing->update([
+                    'break_start' => $start,
+                    'break_end' => $end,
+                ]);
+                continue;
+            }
+
+            //入力あり・既存なし->新規作成
+            $attendance->breakTimes()->create([
+                'break_start' => $start,
+                'break_end' => $end,
+            ]);
+
         }
 
         // 申請を承認済みに

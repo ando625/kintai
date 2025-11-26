@@ -57,12 +57,20 @@
                     </div>
 
                     <!-- 休憩 -->
+                    @php
+                        $break1Start = $display['breaks'][0]['start'] ?? '';
+                        $break1End   = $display['breaks'][0]['end'] ?? '';
+                        $break2Start = $display['breaks'][1]['start'] ?? '';
+                        $break2End   = $display['breaks'][1]['end'] ?? '';
+                    @endphp
                     <div class="detail-row">
                         <dt class="detail-label">休憩</dt>
                         <dd class="detail-value time-inputs">
                             <input type="text" name="break_times[0][start]" class="time-input"
                             value="{{ old('break_times.0.start', $display['breaks'][0]['start'] ?? '') }}"@if($isPending) readonly @endif>
+                            @if(!$isPending || ($break1Start || $break1End))
                             <span class="time-separator">～</span>
+                            @endif
                             <input type="text" name="break_times[0][end]" class="time-input"
                             value="{{ old('break_times.0.end', $display['breaks'][0]['end'] ?? '') }}"@if($isPending) readonly @endif>
                             @error('break_times.0')
@@ -71,15 +79,15 @@
                         </dd>
                     </div>
                     <!-- 休憩2 -->
-                    @if(!$isPending || !empty($display['breaks'][1]['start']) || !empty($display['breaks'][1]['end']))
+                    @if(!$isPending || $break2Start || $break2End)
                     <div class="detail-row">
                         <dt class="detail-label">休憩2</dt>
                         <dd class="detail-value time-inputs">
                             <input type="text" name="break_times[1][start]" class="time-input"
-                            value="{{ old('break_times.1.start', $display['breaks'][1]['start'] ?? '') }}"@if($isPending) readonly @endif>
+                                value="{{ old('break_times.1.start', $break2Start) }}" @if($isPending) readonly @endif>
                             <span class="time-separator">～</span>
                             <input type="text" name="break_times[1][end]" class="time-input"
-                            value="{{ old('break_times.1.end', $display['breaks'][1]['end'] ?? '') }}"@if($isPending) readonly @endif>
+                                value="{{ old('break_times.1.end', $break2End) }}" @if($isPending) readonly @endif>
                             @error('break_times.1')
                                 <span class="text-red">{{ $message }}</span>
                             @enderror
@@ -100,7 +108,7 @@
             </section>
 
             @if ($isPending)
-                <p class="tent-red">＊修正申請中のため編集できません。</p>
+                <p class="tent-red">* 修正申請中のため編集できません。</p>
             @else
                 <div class="button-wrapper">
                     <button type="submit" class="edit-button">修正</button>

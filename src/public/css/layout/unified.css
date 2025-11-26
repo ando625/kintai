@@ -78,7 +78,7 @@ body {
 @media screen and (min-width: 1400px) and (max-width: 1540px) {
     .header-container {
         max-width: 1400px;
-        padding: 0 50px;
+        padding: 0 40px;
     }
 
     .nav-list {
@@ -89,38 +89,29 @@ body {
         height: 40px;
     }
 
-    .nav-link,
-    .logout-button {
-        font-size: 20px;
-    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 850px) {
+
     .header {
-        height: auto;
-        flex-direction: column;
-        padding: 10px 0;
+        height: 60px;
     }
 
     .header-container {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 0 20px;
-        gap: 10px;
+        padding: 0 15px;
+        max-width: 850px;
+    }
+
+    .logo img {
+        height: 30px;
     }
 
     .nav-list {
-        flex-direction: column;
-        gap: 15px;
-        width: 100%;
+        gap: 25px;
     }
 
     .nav-link,
     .logout-button {
-        font-size: 16px;
-    }
-
-    .logo img {
-        height: 35px;
+        font-size: 14px;
     }
 }

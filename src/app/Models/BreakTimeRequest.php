@@ -18,6 +18,13 @@ class BreakTimeRequest extends Model
         'after_end',
     ];
 
+    protected $casts = [
+        'before_start' => 'datetime',
+        'before_end' => 'datetime',
+        'after_start' => 'datetime',
+        'after_end' => 'datetime',
+    ];
+
     public function attendanceRequest()
     {
         return $this->belongsTo(AttendanceRequest::class);

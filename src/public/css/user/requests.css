@@ -72,11 +72,16 @@
 .application-table th {
     padding: 20px 15px;
     text-align: left;
-    font-weight: 600;
+    font-weight: bold;
     font-size: 14px;
     color: #737373;
     border-bottom: 3px solid #E1E1E1;
 }
+
+.application-table th:nth-child(1) {
+    padding-left: 25px;
+}
+
 
 .application-table tbody tr {
     border-bottom: 2px solid #E1E1E1;
@@ -90,6 +95,7 @@
 .application-table td {
     padding: 20px 15px;
     font-size: 14px;
+    font-weight: bold;
     color: #737373;
 }
 

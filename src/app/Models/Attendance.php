@@ -30,7 +30,7 @@ class Attendance extends Model
         'off_duty' => '勤務外',
         'working' => '出勤中',
         'break' => '休憩中',
-        'finished' => '退勤済み',
+        'finished' => '退勤済',
     ];
 
     //ステータスを日本語で取得できるアクセサ

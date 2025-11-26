@@ -16,13 +16,13 @@
         @endphp
         <li class="tab-item">
             <a href="{{ route('user.request.list', ['tab' => 'pending']) }}"
-            class="tab-button {{ request('tab', 'pending') === 'pending' ? 'active' : '' }}">
+            class="tab-button {{ $tab === 'pending' ? 'active' : '' }}">
             承認待ち
             </a>
         </li>
         <li class="tab-item">
             <a href="{{ route('user.request.list', ['tab' => 'approved']) }}"
-            class="tab-button {{ request('tab') === 'approved' ? 'active' : '' }}">
+            class="tab-button {{ $tab === 'approved' ? 'active' : '' }}">
             承認済み
             </a>
         </li>

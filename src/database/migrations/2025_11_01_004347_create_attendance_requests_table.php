@@ -16,10 +16,10 @@ return new class extends Migration
             $table->foreignId('attendance_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('admin_id')->nullable()->constrained()->onDelete('cascade');
-            $table->time('before_clock_in')->nullable();
-            $table->time('before_clock_out')->nullable();
-            $table->time('after_clock_in')->nullable();
-            $table->time('after_clock_out')->nullable();
+            $table->datetime('before_clock_in')->nullable();
+            $table->datetime('before_clock_out')->nullable();
+            $table->datetime('after_clock_in')->nullable();
+            $table->datetime('after_clock_out')->nullable();
             $table->string('before_remarks')->nullable();
             $table->string('after_remarks')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');

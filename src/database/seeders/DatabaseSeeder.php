@@ -3,10 +3,14 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\AttendanceRequest;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AdminSeeder;
 use Database\Seeders\KintaiDataSeeder;
 use Database\Seeders\UserSeeder;
+use Database\Seeders\AttendanceRequestSeeder;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -26,6 +30,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(KintaiDataSeeder::class);
+        $this->call(AttendanceRequestSeeder::class);
 
     }
 }

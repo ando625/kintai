@@ -107,14 +107,11 @@ body {
 
 }
 
-/* ------------------------------------------
-   タブレット (768px - 850px) レイアウト
-------------------------------------------- */
+
 @media screen and (min-width: 768px) and (max-width: 850px) {
 
     .header {
         height: 60px;
-        /* 少し低めにしてヘッダーが重くならないように */
     }
 
     .header-container {
@@ -128,13 +125,11 @@ body {
 
     .nav-list {
         gap: 25px;
-        /* PCより狭くする */
     }
 
     .nav-link,
     .logout-button {
         font-size: 14px;
-        /* 少し小さくフィットさせる */
     }
 }
 

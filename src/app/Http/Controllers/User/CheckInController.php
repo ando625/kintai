@@ -23,23 +23,13 @@ class CheckInController extends Controller
             ->first();
 
         //ステータス判定
-        $status = 'off_duty';  //デフォルト：勤務外
-
-        if ($attendance) {
-            $latestBreak = $attendance->breakTimes()->latest()->first();
-            if ($latestBreak && !$latestBreak->break_end) {
-                $status = 'break';
-            } elseif ($attendance->clock_in && !$attendance->clock_out) {
-                $status = 'working';
-            } elseif ($attendance->clock_out) {
-                $status = 'finished';
-            }
-        }
+        $status = $attendance ? $attendance->status : 'off_duty';
+        //デフォルト：勤務外
 
         // Blade にサーバー時刻を渡す
         return view('user.check-in', [
             'status' => $status,
-            'serverTime' => $now->format('Y-m-d H:i:s'),
+            'serverTime' => $now->format('Y-m-d H:i'),
         ]);
     }
 
@@ -48,12 +38,15 @@ class CheckInController extends Controller
     {
         $user = Auth::user();
         $today = Carbon::today();
-        $now = Carbon::now()->format('H:i:s');
+        $now = Carbon::now()->format('H:i');
 
         $attendance = Attendance::firstOrCreate(
             ['user_id' => $user->id, 'work_date' => $today],
             ['clock_in' => $now]
         );
+
+        //出勤したのでステータスを更新
+        $attendance->update(['status' => 'working']);
 
         return redirect()->route('user.check-in');
 
@@ -64,7 +57,7 @@ class CheckInController extends Controller
     {
         $user = Auth::user();
         $today = Carbon::today();
-        $now = Carbon::now()->format('H:i:s');
+        $now = Carbon::now()->format('H:i');
 
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('work_date', $today)
@@ -72,9 +65,11 @@ class CheckInController extends Controller
 
         //もし今日の勤怠レコードが存在していて、かつまだ退勤時刻が記録されていなければ
         if ($attendance && !$attendance->clock_out) {
-            $attendance->update(['clock_out' => $now]);
+            $attendance->update([
+                'clock_out' => $now,
+                'status' => 'finished'
+            ]);
         }
-
 
         return redirect()->route('user.check-in');
     }
@@ -84,7 +79,7 @@ class CheckInController extends Controller
     {
         $user = Auth::user();
         $today = Carbon::today();
-        $now = Carbon::now()->format('H:i:s');
+        $now = Carbon::now()->format('H:i');
 
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('work_date', $today)
@@ -92,8 +87,8 @@ class CheckInController extends Controller
 
         if ($attendance) {
             $attendance->breakTimes()->create([
-                'break_start' => $now,
-            ]);
+                'break_start' => $now,]);
+            $attendance->update(['status' => 'break']);
         }
 
         return redirect()->route('user.check-in');
@@ -104,7 +99,7 @@ class CheckInController extends Controller
     {
         $user = Auth::user();
         $today = Carbon::today();
-        $now = Carbon::now()->format('H:i:s');
+        $now = Carbon::now()->format('H:i');
 
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('work_date', $today)
@@ -115,6 +110,7 @@ class CheckInController extends Controller
             $break = $attendance->breakTimes()->whereNull('break_end')->latest()->first();
             if ($break) {
                 $break->update(['break_end' => $now]);
+                $attendance->update(['status' => 'working']);
             }
         }
 

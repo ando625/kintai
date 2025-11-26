@@ -38,34 +38,9 @@ class AttendanceController extends Controller
 
             if ($attendances->has($workDate)) {
                 $att = $attendances->get($workDate);
-                $useRequest = $att->latestRequest?->status === 'pending' ? $att->latestRequest : null;
 
-                $breaks = ($useRequest?->breakTimeRequests->count() > 0 ? $useRequest->breakTimeRequests : $att->breakTimes)
-                    ->map(function ($b) use ($useRequest) {
-                        $start = $useRequest ? $b->after_start : $b->break_start;
-                        $end   = $useRequest ? $b->after_end   : $b->break_end;
-                        return ($start && $end) ? Carbon::parse($start)->format('H:i') . '-' . Carbon::parse($end)->format('H:i') : null;
-                    })->filter()->values()->all();
-
-                $att->break_hours_formatted = $breaks ? implode(' / ', $breaks) : '-';
-
-                $clockIn  = $useRequest?->after_clock_in ?? $att->clock_in;
-                $clockOut = $useRequest?->after_clock_out ?? $att->clock_out;
-
-                $workMinutes = 0;
-                if ($clockIn && $clockOut) {
-                    $diff = Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
-                    $breakMinutes = 0;
-                    foreach ($useRequest?->breakTimeRequests ?? $att->breakTimes as $b) {
-                        $start = $useRequest ? $b->after_start : $b->break_start;
-                        $end   = $useRequest ? $b->after_end   : $b->break_end;
-                        if ($start && $end) $breakMinutes += Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
-                    }
-                    $workMinutes = $diff - $breakMinutes;
-                }
-
-                $att->work_hours_formatted = sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60);
                 $daysInMonth[] = $att;
+
             } else {
                 $daysInMonth[] = new Attendance([
                     'id' => null,
@@ -95,13 +70,17 @@ class AttendanceController extends Controller
             ->where('user_id', $user->id)
             ->findOrFail($id);
 
+        //修正申請中か判定
         $isPending = $attendance->latestRequest?->status === 'pending';
         $useRequest = $isPending ? $attendance->latestRequest : null;
 
+        //表示値の設定　修正申請中ならafter使う　ないならDBの値を使う
         $clockIn  = $useRequest?->after_clock_in ?? $attendance->clock_in;
         $clockOut = $useRequest?->after_clock_out ?? $attendance->clock_out;
-
+        $remarks = $useRequest?->after_remarks ?? $attendance->remarks;
         $breakTimes = $useRequest?->breakTimeRequests ?? $attendance->breakTimes;
+
+        //休憩表示用配列作成
         $displayBreaks = [];
         foreach ($breakTimes as $b) {
             $start = $useRequest ? $b->after_start : $b->break_start;
@@ -112,24 +91,12 @@ class AttendanceController extends Controller
             ];
         }
 
-        $workMinutes = 0;
-        if ($clockIn && $clockOut) {
-            $diff = Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
-            $breakMinutes = 0;
-            foreach ($breakTimes as $b) {
-                $start = $useRequest ? $b->after_start : $b->break_start;
-                $end   = $useRequest ? $b->after_end   : $b->break_end;
-                if ($start && $end) $breakMinutes += Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
-            }
-            $workMinutes = $diff - $breakMinutes;
-        }
 
         $display = [
             'clock_in' => $clockIn ? Carbon::parse($clockIn)->format('H:i') : '',
             'clock_out' => $clockOut ? Carbon::parse($clockOut)->format('H:i') : '',
             'remarks' => $useRequest?->after_remarks ?? $attendance->remarks,
             'breaks' => $displayBreaks,
-            'work_hours_formatted' => sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60),
         ];
 
         return view('user.show', compact('attendance', 'user', 'display', 'isPending'));
@@ -164,16 +131,18 @@ class AttendanceController extends Controller
             $end   = $input['end'];
             $attendanceBreak = $attendance->breakTimes[$i] ?? null;
 
-            // 両方空なら無視（申請には保存しない）
-            if (empty($start) && empty($end)) continue;
+            // 日付と結合して DATETIME に変換
+            $workDate = $attendance->work_date->format('Y-m-d');
+            $startDatetime = $start ? Carbon::parse("$workDate $start") : null;
+            $endDatetime   = $end   ? Carbon::parse("$workDate $end")   : null;
 
             BreakTimeRequest::create([
                 'attendance_request_id' => $attendanceRequest->id,
                 'break_time_id'         => $attendanceBreak?->id,
-                'before_start'          => $attendanceBreak?->break_start?->format('H:i') ?? null,
-                'before_end'            => $attendanceBreak?->break_end?->format('H:i') ?? null,
-                'after_start'           => $start,
-                'after_end'             => $end,
+                'before_start'          => $attendanceBreak?->break_start,
+                'before_end'            => $attendanceBreak?->break_end,
+                'after_start'           => $startDatetime,
+                'after_end'             => $endDatetime,
             ]);
         }
 
