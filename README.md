@@ -441,8 +441,8 @@ docker compose up -d --build
 | id         | unsigned bigint                          | ○           |            | ○        |               |
 | user_id    | unsigned bigint                          |             |            | ○        | users(id)     |
 | work_date  | date                                     |             |            | ○        |               |
-| clock_in   | time                                     |             |            | ○        |               |
-| clock_out  | time                                     |             |            |          |               |
+| clock_in   | datetime                                     |             |            | ○        |               |
+| clock_out  | datetime                                     |             |            |          |               |
 | status     | enum(off_duty,working,break,finished)    |             |            | ○        |               |
 | remarks    | text                                     |             |            |          |               |
 | created_at | timestamp                                |             |            | ○        |               |
@@ -454,8 +454,8 @@ docker compose up -d --build
 |----------------|-----------------|-------------|------------|----------|-------------------|
 | id             | unsigned bigint | ○           |            | ○        |                   |
 | attendance_id  | unsigned bigint |             |            | ○        | attendances(id)   |
-| break_start    | time            |             |            |          |                   |
-| break_end      | time            |             |            |          |                   |
+| break_start    | datetime            |             |            |          |                   |
+| break_end      | datetime            |             |            |          |                   |
 | created_at     | timestamp       |             |            | ○        |                   |
 | updated_at     | timestamp       |             |            | ○        |                   |
 
@@ -467,10 +467,10 @@ docker compose up -d --build
 | attendance_id    | unsigned bigint                       |             |            | ○        | attendances(id)   |
 | user_id          | unsigned bigint                       |             |            | ○        | users(id)         |
 | admin_id         | unsigned bigint                       |             |            |          | admins(id)        |
-| before_clock_in  | time                                  |             |            |          |                   |
-| before_clock_out | time                                  |             |            |          |                   |
-| after_clock_in   | time                                  |             |            |          |                   |
-| after_clock_out  | time                                  |             |            |          |                   |
+| before_clock_in  | datetime                                  |             |            |          |                   |
+| before_clock_out | datetime                                  |             |            |          |                   |
+| after_clock_in   | datetime                                  |             |            |          |                   |
+| after_clock_out  | datetime                                  |             |            |          |                   |
 | before_remarks   | text                                  |             |            |          |                   |
 | after_remarks    | text                                  |             |            |          |                   |
 | status           | enum(pending,approved)                |             |            |          |                   |
@@ -484,10 +484,10 @@ docker compose up -d --build
 | id                       | unsigned bigint | ○           |            | ○        |                              |
 | attendance_request_id    | unsigned bigint |             |            | ○        | attendance_requests(id)      |
 | break_time_id            | unsigned bigint |             |            |          | break_times(id)              |
-| before_start             | time            |             |            |          |                              |
-| before_end               | time            |             |            |          |                              |
-| after_start              | time            |             |            |          |                              |
-| after_end                | time            |             |            |          |                              |
+| before_start             | datetime            |             |            |          |                              |
+| before_end               | datetime            |             |            |          |                              |
+| after_start              | datetime            |             |            |          |                              |
+| after_end                | datetime            |             |            |          |                              |
 | created_at               | timestamp       |             |            | ○        |                              |
 | updated_at               | timestamp       |             |            | ○        |                              |
 
