@@ -563,7 +563,7 @@ docker compose up -d --build
 - 認証処理（`authenticate()`メソッド）をFormRequest側に分離して可読性を向上
 
 ### Fortify との使い分け
-- Fortify：会員登録（`/register`）やメール認証のみ利用
+- Fortify：会員登録（`/user/register`）やメール認証のみ利用
 - ログイン：自作コントローラ＋FormRequestで実装（Fortify側は無効化）
 
 ---
@@ -575,6 +575,7 @@ docker compose up -d --build
 
 ### 一般ログインURL   http://localhost/　 又は　  http://localhost/login
 ### 管理者ログインURL   http://localhost/admin/login 
+### 一般新規会員登録URL 　 http://localhost/user/register
 
 
 
@@ -643,6 +644,8 @@ AdminSeeder.phpで作成しているのでログインする前に一度確認�
 
 
 ### 一般ユーザー
+-  一般ユーザーログインURL 　 http://localhost/login
+-  一般新規会員登録URL 　 http://localhost/user/register
 
 - ダミーデータ作成時に 7 人分のユーザーが作成され、MailHog にそれぞれ認証メールが届きます。
 - ログインしたユーザーのメールを開き、メール内の「Verify Email Address」リンクをクリックして認証してください。メール認証が完了し、勤怠画面に遷移します
@@ -674,7 +677,7 @@ AdminSeeder.phpで作成しているのでログインする前に一度確認�
 - MailHog
 - Laravel Fortify
 - PHPUnit
-- Git
+- GitHub
 
 
 ---

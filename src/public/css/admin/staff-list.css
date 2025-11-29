@@ -24,6 +24,8 @@
 .staff-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
+    /* 固定レイアウトに変更 */
 }
 
 .staff-table thead {
@@ -31,12 +33,35 @@
 }
 
 .staff-table th {
-    padding: 12px 30px;
+    padding: 12px 10px;
     text-align: center;
     font-weight: bold;
     color: #737373;
     font-size: 16px;
     border-bottom: 3px solid #E1E1E1;
+}
+
+/* 各列の幅を固定して中央に寄せる */
+.staff-table th:nth-child(1),
+.staff-table td:nth-child(1) {
+    width: 150px;
+    /* 名前列の固定幅 */
+    padding-left: 100px;
+    /* 左側に大きな余白 */
+}
+
+.staff-table th:nth-child(2),
+.staff-table td:nth-child(2) {
+    width: 350px;
+    /* メールアドレス列の固定幅 */
+}
+
+.staff-table th:nth-child(3),
+.staff-table td:nth-child(3) {
+    width: 150px;
+    /* 月次勤怠列の固定幅 */
+    padding-right: 100px;
+    /* 右側に大きな余白 */
 }
 
 .staff-table tbody tr {
@@ -53,7 +78,7 @@
 }
 
 .staff-table td {
-    padding: 12px 30px;
+    padding: 12px 10px;
     text-align: center;
     color: #737373;
     font-size: 16px;
@@ -76,7 +101,6 @@
 @media (min-width: 1400px) and (max-width: 1540px) {
     .staff-container {
         max-width: 1000px;
-        /* 少し広く */
         padding: 40px 30px;
     }
 
@@ -87,9 +111,25 @@
         margin-bottom: 80px;
     }
 
+    .staff-table th:nth-child(1),
+    .staff-table td:nth-child(1) {
+        width: 170px;
+        padding-left: 120px;
+    }
+
+    .staff-table th:nth-child(2),
+    .staff-table td:nth-child(2) {
+        width: 380px;
+    }
+
+    .staff-table th:nth-child(3),
+    .staff-table td:nth-child(3) {
+        width: 170px;
+        padding-right: 120px;
+    }
+
     .staff-table th,
     .staff-table td {
-        padding: 12px 25px;
         font-size: 15px;
     }
 
@@ -112,9 +152,26 @@
         margin-bottom: 60px;
     }
 
+    .staff-table th:nth-child(1),
+    .staff-table td:nth-child(1) {
+        width: 120px;
+        padding-left: 50px;
+    }
+
+    .staff-table th:nth-child(2),
+    .staff-table td:nth-child(2) {
+        width: 280px;
+    }
+
+    .staff-table th:nth-child(3),
+    .staff-table td:nth-child(3) {
+        width: 120px;
+        padding-right: 50px;
+    }
+
     .staff-table th,
     .staff-table td {
-        padding: 10px 12px;
+        padding: 10px 8px;
         font-size: 14px;
     }
 
@@ -125,6 +182,5 @@
     .staff-table th,
     .staff-table td {
         text-align: center;
-        /* 中央揃えは維持 */
     }
 }

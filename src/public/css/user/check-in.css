@@ -28,6 +28,7 @@
     font-size: 15px;
     font-weight: bold;
     margin-bottom: 20px;
+    letter-spacing: 0.1em;
 }
 
 .status-badge.status-working {
@@ -76,6 +77,7 @@
     margin: 0;
 }
 
+
 /* 共通ボタンスタイル */
 .btn {
     padding: 14px 18px;
@@ -86,6 +88,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     min-width: 150px;
+    letter-spacing: 0.2em;
 }
 
 /* プライマリボタン（出勤・退勤） */
@@ -113,9 +116,9 @@
 
 /* メッセージ表示 */
 .message {
-    font-size: 22px;
+    font-size: 26px;
     color: #000000;
-    font-weight: 400;
+    font-weight: 700;
     margin: 0;
     letter-spacing: 0.5px;
 }

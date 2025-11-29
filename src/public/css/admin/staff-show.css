@@ -92,23 +92,31 @@
 
 
 .attendance-table th {
-    padding: 15px 10px;
+    padding: 12px 6px;
+    /* 左右を縮小 */
     text-align: center;
     font-weight: bold;
     font-size: 16px;
     color: #737373;
     height: 30px;
     border-bottom: 3px solid #E1E1E1;
+    white-space: nowrap;
 }
 
 .attendance-table td {
-    padding: 15px 10px;
+    padding: 10px 4px;
+    /* tdだけさらに縮小 */
     text-align: center;
     height: 30px;
     font-size: 16px;
     font-weight: bold;
     border-bottom: 2px solid #E1E1E1;
     color: #737373;
+    white-space: nowrap;
+}
+
+.attendance-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
 .attendance-table tbody tr:hover {
@@ -128,12 +136,19 @@
     border-radius: 3px;
     transition: background-color 0.3s;
 }
+.no-detail{
+    color: #000000;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
 
-.csv-button-wrapper{
+.csv-button-wrapper {
     display: flex;
     justify-content: flex-end;
     margin-top: 30px;
-
 }
 
 .csv-button {
@@ -181,9 +196,14 @@
         font-size: 20px;
     }
 
-    .attendance-table th,
+    .attendance-table th {
+        padding: 15px 8px;
+        font-size: 18px;
+    }
+
     .attendance-table td {
-        padding: 18px 12px;
+        padding: 12px 6px;
+        /* tdだけさらに縮小 */
         font-size: 18px;
     }
 
@@ -225,9 +245,14 @@
         font-size: 16px;
     }
 
-    .attendance-table th,
+    .attendance-table th {
+        padding: 10px 4px;
+        font-size: 14px;
+    }
+
     .attendance-table td {
-        padding: 12px 8px;
+        padding: 8px 3px;
+        /* tdだけさらに縮小 */
         font-size: 14px;
     }
 

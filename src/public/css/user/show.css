@@ -113,15 +113,17 @@
     margin-left: 0;
 }
 
-.time-input:focus {
-    outline: none;
-    border-color: #666;
-}
+
 
 .time-separator {
     font-size: 16px;
     font-weight: bold;
     color: #000000;
+}
+
+.time-error {
+    margin-top: -20px !important;
+    padding-top: 0 !important;
 }
 
 .text-red {
@@ -188,6 +190,7 @@
     font-size: 14px;
     margin-top: 15px;
     text-align: right;
+    letter-spacing: 0.1em;
 }
 
 .alert-success {

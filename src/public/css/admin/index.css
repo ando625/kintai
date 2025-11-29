@@ -111,7 +111,7 @@
 }
 
 .attendance-table tbody tr {
-    border-bottom: 3px solid #E1E1E1;
+    border-bottom: 2px solid #E1E1E1;
     transition: background-color 0.2s;
 }
 

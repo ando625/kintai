@@ -9,7 +9,7 @@
 .page-title {
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     color: #000000;
     padding-left: 15px;
     border-left: 8px solid #000000;
@@ -59,7 +59,7 @@
 .table-wrapper {
     overflow-x: auto;
     background-color: #E1E1E1;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 /* テーブル */
@@ -70,16 +70,17 @@
 }
 
 .application-table th {
-    padding: 20px 15px;
+    padding: 12px 10px;
     text-align: left;
     font-weight: bold;
     font-size: 14px;
     color: #737373;
     border-bottom: 3px solid #E1E1E1;
+    white-space: nowrap;
 }
 
 .application-table th:nth-child(1) {
-    padding-left: 25px;
+    padding-left: 20px;
 }
 
 .application-table tbody tr {
@@ -87,16 +88,26 @@
     transition: background-color 0.2s ease;
 }
 
+/* 最後の行の下線を削除 */
+.application-table tbody tr:last-child {
+    border-bottom: none;
+}
+
 .application-table tbody tr:hover {
     background-color: #fafafa;
 }
 
 .application-table td {
-    padding: 20px 15px;
+    padding: 12px 10px;
     font-size: 14px;
     text-align: left;
     font-weight: bold;
     color: #737373;
+    white-space: nowrap;
+}
+
+.application-table td:nth-child(1) {
+    padding-left: 20px;
 }
 
 /* 詳細リンク */
@@ -133,8 +144,13 @@
 
     .application-table th,
     .application-table td {
-        padding: 25px 20px;
+        padding: 15px 12px;
         font-size: 16px;
+    }
+
+    .application-table th:nth-child(1),
+    .application-table td:nth-child(1) {
+        padding-left: 25px;
     }
 }
 
@@ -159,7 +175,12 @@
 
     .application-table th,
     .application-table td {
-        padding: 15px 10px;
+        padding: 10px 8px;
         font-size: 12px;
+    }
+
+    .application-table th:nth-child(1),
+    .application-table td:nth-child(1) {
+        padding-left: 15px;
     }
 }

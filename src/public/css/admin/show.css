@@ -94,7 +94,11 @@
     align-items: center;
     gap: 60px;
     flex-wrap: wrap;
-    row-gap: 4px;
+    row-gap: 8px;
+}
+.time-error {
+    margin-top: -20px !important;
+    padding-top: 0 !important;
 }
 
 .time-input {
@@ -113,10 +117,7 @@
     margin-left: 0;
 }
 
-.time-input:focus {
-    outline: none;
-    border-color: #666;
-}
+
 
 .time-separator {
     font-size: 16px;
@@ -128,7 +129,7 @@
     color: #ff0000;
     font-size: 14px;
     font-weight: normal;
-    margin-top: 5px;
+    margin-top: 2px;
     width: 100%;
     display: block;
 }
@@ -188,6 +189,7 @@
     font-size: 14px;
     margin-top: 15px;
     text-align: right;
+    letter-spacing: 0.1em;
 }
 
 

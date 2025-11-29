@@ -51,7 +51,7 @@
                                 value="{{ old('clock_out', $display['clock_out']) }}"
                                 @if($isPending) readonly @endif>
                             @if ($errors->has('clock_in') || $errors->has('clock_out'))
-                                <span class="text-red">出勤時間もしくは退勤時間が不適切な値です</span>
+                                <span class="text-red time-error">出勤時間もしくは退勤時間が不適切な値です</span>
                             @endif
                         </dd>
                     </div>
@@ -74,7 +74,7 @@
                             <input type="text" name="break_times[0][end]" class="time-input"
                             value="{{ old('break_times.0.end', $display['breaks'][0]['end'] ?? '') }}"@if($isPending) readonly @endif>
                             @error('break_times.0')
-                                <span class="text-red">{{ $message }}</span>
+                                <span class="text-red time-error">{{ $message }}</span>
                             @enderror
                         </dd>
                     </div>
@@ -89,7 +89,7 @@
                             <input type="text" name="break_times[1][end]" class="time-input"
                                 value="{{ old('break_times.1.end', $break2End) }}" @if($isPending) readonly @endif>
                             @error('break_times.1')
-                                <span class="text-red">{{ $message }}</span>
+                                <span class="text-red time-error">{{ $message }}</span>
                             @enderror
                         </dd>
                     </div>
@@ -108,7 +108,7 @@
             </section>
 
             @if ($isPending)
-                <p class="tent-red">* 修正申請中のため編集できません。</p>
+                <p class="tent-red">* 承認待ちのため修正はできません。</p>
             @else
                 <div class="button-wrapper">
                     <button type="submit" class="edit-button">修正</button>
