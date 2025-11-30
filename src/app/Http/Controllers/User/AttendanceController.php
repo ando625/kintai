@@ -159,7 +159,6 @@ class AttendanceController extends Controller
             ->where('user_id', $user->id)
             ->where('status', 'pending')
             ->orderBy('created_at', 'asc')
-            ->distinct('id')
             ->get();
 
         // 承認済み
@@ -167,7 +166,6 @@ class AttendanceController extends Controller
             ->where('user_id', $user->id)
             ->where('status', 'approved')
             ->orderBy('created_at', 'asc')
-            ->distinct('id')
             ->get();
 
         return view(

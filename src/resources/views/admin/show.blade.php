@@ -9,7 +9,9 @@
 @section('content')
 <div class="attendance-detail-container">
     <div class="content-wrapper">
-
+        @if (session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
         <h1 class="page-title">勤怠詳細</h1>
 
         @php

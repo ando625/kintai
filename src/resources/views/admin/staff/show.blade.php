@@ -1,6 +1,6 @@
 @extends('layouts.unified')
 
-@section('title', '勤怠一覧画面 - COACHTECH')
+@section('title', 'スタッフ別勤怠一覧画面 - COACHTECH')
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('css/admin/staff-show.css') }}">

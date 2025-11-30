@@ -20,8 +20,8 @@ return new class extends Migration
             $table->datetime('before_clock_out')->nullable();
             $table->datetime('after_clock_in')->nullable();
             $table->datetime('after_clock_out')->nullable();
-            $table->string('before_remarks')->nullable();
-            $table->string('after_remarks')->nullable();
+            $table->text('before_remarks')->nullable();
+            $table->text('after_remarks')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });

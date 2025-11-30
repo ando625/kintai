@@ -22,11 +22,6 @@ class AdminAttendanceController extends Controller
         // 今日の日付
         $today = Carbon::today();
 
-        /* 未来の日付指定があったら今日に戻す
-        if ($targetDate->gt($today)) {
-            $targetDate = $today;
-        } */
-
         // 勤怠データ取得
         $attendances = Attendance::with(['user', 'breakTimes'])
             ->whereDate('work_date', $targetDate)
@@ -35,10 +30,6 @@ class AdminAttendanceController extends Controller
         // 前後の日付リンク
         $prevDate = $targetDate->copy()->subDay()->toDateString();
         $nextDate = $targetDate->copy()->addDay()->toDateString();
-
-        /*if ($nextDate > $today->toDateString()) {
-            $nextDate = null; // 翌日が未来なら非表示にする
-        }*/
 
         return view('admin.index', compact('attendances', 'targetDate', 'today', 'prevDate', 'nextDate'));
     }

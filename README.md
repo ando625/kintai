@@ -575,7 +575,7 @@ docker compose up -d --build
 
 ### 一般ログインURL   http://localhost/　 又は　  http://localhost/login
 ### 管理者ログインURL   http://localhost/admin/login 
-### 一般新規会員登録URL 　 http://localhost/user/register
+
 
 
 

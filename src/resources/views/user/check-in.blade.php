@@ -98,6 +98,6 @@ function updateDateTime() {
 
 // 初期化
 updateDateTime();
-setInterval(updateDateTime, 1000); // 1分ごとに更新
+setInterval(updateDateTime, 1000);
 </script>
 @endsection

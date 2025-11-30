@@ -40,8 +40,6 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($data['password']),
         ]);
 
-        //メール二通届くため一旦消す　event(new Registered($user));
-
         Auth::login($user);
 
         return $user;

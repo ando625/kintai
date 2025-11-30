@@ -97,7 +97,7 @@
     row-gap: 8px;
 }
 .time-error {
-    margin-top: -20px !important;
+    margin-top: 1px !important;
     padding-top: 0 !important;
 }
 
@@ -155,7 +155,7 @@
 }
 
 .remarks-input+.text-red {
-    margin-top: 4px;
+    margin-top: 1px;
 }
 
 .button-wrapper {
@@ -185,11 +185,22 @@
 }
 
 .tent-red {
-    color: #ff0000;
+    color: #FF000080;
     font-size: 14px;
     margin-top: 15px;
+    font-weight: 800;
     text-align: right;
     letter-spacing: 0.1em;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+    font-weight: bold;
 }
 
 
@@ -213,6 +224,7 @@
     outline: none;
     box-shadow: none;
 }
+
 
 
 
