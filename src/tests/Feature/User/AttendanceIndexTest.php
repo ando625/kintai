@@ -64,9 +64,9 @@ class AttendanceIndexTest extends TestCase
     {
         $user = $this->createUserAndLogin();
 
-        $response =$this->get('/attendance?month=2025-11');
+        $response =$this->get('/attendance?month=2025-12');
         $response->assertStatus(200);
-        $response->assertSee('2025/11');
+        $response->assertSee('2025/12');
 
     }
 

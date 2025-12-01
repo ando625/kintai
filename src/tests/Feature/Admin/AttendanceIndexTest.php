@@ -23,7 +23,7 @@ class AttendanceIndexTest extends TestCase
     public function test_管理者は当日の日付と全ユーザーの勤怠一覧を確認できる()
     {
 
-        Carbon::setTestNow('2025-11-25');
+        Carbon::setTestNow('2025-12-10');
         $today = Carbon::today();
         $date = $today->toDateString(); // '2025-11-25'
 
@@ -73,7 +73,7 @@ class AttendanceIndexTest extends TestCase
         $response = $this->get("/admin/index?date={$date}");
 
         $response->assertStatus(200);
-        $response->assertSee('2025年11月25日');
+        $response->assertSee('2025年12月10日');
         $response->assertSee('テスト1');
         $response->assertSee('テスト2');
         $response->assertSee('09:00');
@@ -87,7 +87,7 @@ class AttendanceIndexTest extends TestCase
     public function test_前日と翌日ボタンで正しい勤怠が表示される()
     {
 
-        Carbon::setTestNow('2025-11-20');
+        Carbon::setTestNow('2025-12-11');
         $todayDate = Carbon::today();
         $prevDate = $todayDate->copy()->subDay();
         $nextDate = $todayDate->copy()->addDay();
@@ -154,7 +154,7 @@ class AttendanceIndexTest extends TestCase
 
         $responseToday = $this->get("/admin/index?date={$todayDate->toDateString()}");
         $responseToday->assertStatus(200);
-        $responseToday->assertSee('2025年11月20日');
+        $responseToday->assertSee('2025年12月11日');
         $responseToday->assertSee('テスト1');
         $responseToday->assertSee('09:30');
         $responseToday->assertSee('18:30');
@@ -162,14 +162,14 @@ class AttendanceIndexTest extends TestCase
 
         $responsePrev = $this->get("/admin/index?date={$prevDate->toDateString()}");
         $responsePrev->assertStatus(200);
-        $responsePrev->assertSee('2025年11月19日');
+        $responsePrev->assertSee('2025年12月10日');
         $responsePrev->assertSee('09:00');
         $responsePrev->assertSee('18:00');
         $responsePrev->assertSee('1:00');
 
         $responseNext = $this->get("/admin/index?date={$nextDate->toDateString()}");
         $responseNext->assertStatus(200);
-        $responseNext->assertSee('2025年11月21日');
+        $responseNext->assertSee('2025年12月12日');
         $responseNext->assertSee('10:00');
         $responseNext->assertSee('19:00');
         $responseNext->assertSee('1:15');

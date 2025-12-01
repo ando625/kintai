@@ -107,7 +107,7 @@ MAIL_PORT=1025
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS="example@furiapp.test"
+MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
@@ -139,7 +139,7 @@ php artisan migrate:fresh --seed
 ```
 
 ### 勤怠ダミーデータについて
-- 過去7か月分（2025年4月まで）の勤怠データが作成済み
+- 過去7か月分（2025年5月まで）の勤怠データが作成済み
 - 今日以降のデータは含まれず、出勤・退勤や、土日出勤もランダム設定
 - 休憩時間は12:00~13:00で設定
 

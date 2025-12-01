@@ -286,17 +286,19 @@ class AttendanceRequestTest extends TestCase
             'after_end'   => '12:00:00',
         ]);
 
-        $response = $this->get('/my_requests?tab=pending');
-        $response = $this->get("/attendance/detail/{$attendance->id}");
-        $response->assertStatus(200);
-        $response->assertSee($attendance->work_date->format('2025年'));
-        $response->assertSee($attendance->work_date->format('1月12日'));
+        $this->get('/my_requests?tab=pending')
+            ->assertStatus(200)
+            ->assertSee('修正メモ');
 
-        $response->assertSee('08:00');
-        $response->assertSee('17:00');
-        $response->assertSee('11:00');
-        $response->assertSee('12:00');
-        $response->assertSee('修正メモ');
+        $this->get("/attendance/detail/{$attendance->id}")
+            ->assertStatus(200)
+            ->assertSee($attendance->work_date->format('2025年'))
+            ->assertSee($attendance->work_date->format('1月12日'))
+            ->assertSee('08:00')
+            ->assertSee('17:00')
+            ->assertSee('11:00')
+            ->assertSee('12:00')
+            ->assertSee('修正メモ');
     }
 
 }
