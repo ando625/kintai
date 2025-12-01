@@ -65,7 +65,7 @@ class staffListTest extends TestCase
 
         $attendance = Attendance::create([
             'user_id' => $user->id,
-            'work_date' => '2025-11-20',
+            'work_date' => '2025-12-05',
             'clock_in' => '09:00',
             'clock_out' => '18:00',
             'status' => 'finished',
@@ -75,7 +75,7 @@ class staffListTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertSee('ユーザー1さんの勤怠');
-        $response->assertSee('11/20');
+        $response->assertSee('12/05');
         $response->assertSee('09:00');
         $response->assertSee('18:00');
     }
