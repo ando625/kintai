@@ -25,7 +25,7 @@ class AttendanceIndexTest extends TestCase
 
         Carbon::setTestNow('2025-12-10');
         $today = Carbon::today();
-        $date = $today->toDateString(); // '2025-11-25'
+        $date = $today->toDateString();
 
         $admin = Admin::create([
             'email' => 'admin@example.com',
@@ -100,7 +100,7 @@ class AttendanceIndexTest extends TestCase
 
 
 
-        // ===== ユーザー作成 =====
+
         $user1 = User::create([
             'name' => 'テスト1',
             'email' => 'test1@example.com',
@@ -112,7 +112,6 @@ class AttendanceIndexTest extends TestCase
             'password' => Hash::make('password'),
         ]);
 
-        // ===== 勤怠データ作成 =====
         $attendance1 = Attendance::create([
             'user_id' => $user1->id,
             'work_date' => $prevDate->toDateString(),
