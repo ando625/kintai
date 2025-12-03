@@ -12,7 +12,7 @@
 
     <ul class="border__list tab-container">
         @php
-            $tab = request('tab', 'pending'); 
+            $tab = request('tab', 'pending');
         @endphp
         <li class="tab-item">
             <a href="{{ route('admin.requests', ['tab' => 'pending']) }}"

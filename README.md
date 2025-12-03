@@ -45,6 +45,7 @@ mailhog     Up
 ---
 
 ## 3. Laravel 環境構築
+この章では、Laravelを起動するために必要な初期セットアップ（依存関係のインストール、APP_KEY 生成など）を行います。
 
 ### 3-1. PHP コンテナに入る
 
@@ -53,6 +54,8 @@ docker compose exec php bash
 ```
 
 ### 3-2. Composer で依存関係をインストール
+
+phpコンテナの中で実行
 
 ```bash
 composer install
@@ -82,7 +85,7 @@ DB_PASSWORD=laravel_pass
 
 
 
-## メール認証機能（MailHog使用）
+## 3-4. メール認証機能（MailHog使用）
 
 - 本アプリでは 新規会員登録時および初回ログイン時にメール認証 を行います。
 - メール送信のテストは MailHog を使用します。
@@ -111,26 +114,23 @@ MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-- 新規登録後、誘導画面の「認証はこちらから」ボタンを押すと押すと MailHog が開き、届いたメール内のリンクをクリックして認証を完了させる、そしてプロフィール画面へ遷移します。
-- 新規登録後メール認証をせずにログインした場合、メール認証画面に飛びます、そしてプロフィール登録していただきます。
 
 ### メール認証の流れ
 
 1.	新規ユーザーを登録（メールアドレス・パスワードを入力）
 2.	登録完了後、メール認証誘導画面に遷移
 3.	誘導画面で「認証はこちらから」ボタンをクリックすると、MailHog が開きます。
-4.	MailHog で届いた認証メールの中の「メールアドレスはこちら」or 「Verify Email Address」リンク（ボタン）をクリックして初めてメール認証が完了し、プロフィール設定画面に遷移します。
-5. 認証完了 → プロフィール設定画面に遷移
+4.	MailHog で届いた認証メールの中の「メールアドレスはこちら」or 「Verify Email Address」リンク（ボタン）をクリックして初めてメール認証が完了し、勤怠登録画面へ遷移します。
 
 
 
-### 3-4. アプリケーションキー生成
+### 3-5. アプリケーションキー生成
 
 ```bash
 php artisan key:generate
 ```
 
-### 3-5. データベース準備（データベースの初期化・開発用）
+### 3-6. データベース準備（データベースの初期化・開発用）
 
 開発環境で事前にダミーデータを入れるので以下を実行してください：
 
@@ -158,7 +158,7 @@ php artisan migrate:fresh --seed
 
 ---
 
-### MySQLコンテナに入る
+### 4-1. MySQLコンテナに入る
 
 まず MySQL コンテナに接続します。
 mysqlにcdで移動して↓
@@ -169,7 +169,7 @@ docker compose exec mysql bash
 
 ---
 
-### MySQL に root ユーザーでログイン
+### 4-2. MySQL に root ユーザーでログイン
 
 ```bash
 mysql -u root -p
@@ -185,7 +185,7 @@ MYSQL_ROOT_PASSWORD: root
 
 ---
 
-### テスト用データベースを作成
+### 4-3. テスト用データベースを作成
 
 MySQL にログインできたら、以下を実行：
 
@@ -226,17 +226,19 @@ SHOW DATABASES;
 
 その後退出
 ```
-exit
+exit  # MySQLを終了
 ```
 ---
 
-### `.env.testing` の作成
+### 4-4. `.env.testing` の作成
 
-cdでphpに移動し、
+phpコンテナに入り、
 PHP コンテナに入って、`.env` をコピーして `.env.testing` を作成します。
 
 ```bash
-docker compose exec php bash
+docker compose exec php bash```
+
+```
 cp .env .env.testing
 ```
 
@@ -263,11 +265,11 @@ DB_PASSWORD=root
 ✅ `APP_KEY` は一旦空欄にしておきます
 
 
-✅ `DB` も`demo_test`と`roo`に設定します
+✅ `DB` も`demo_test`と`root`に設定します
 
 ---
 
-### テスト用アプリキーを生成
+### 4-5. テスト用アプリキーを生成
 そして、先ほど「空」にしたAPP_KEYに新たなテスト用のアプリケーションキーを加えるために以下のコマンドを実行します
 
 ```bash
@@ -282,7 +284,7 @@ php artisan config:clear
 
 ---
 
-### テスト用マイグレーション実行
+### 4-6. テスト用マイグレーション実行
 
 ```bash
 php artisan migrate --env=testing
@@ -292,7 +294,7 @@ php artisan migrate --env=testing
 
 ---
 
-### PHPUnit の設定確認
+### 4-7. PHPUnit の設定確認
 
 このプロジェクトには、すでに **テスト環境用の設定済み `phpunit.xml`** が用意されています。
 特に編集は不要です。内容を確認して、下記のように設定されていることを確認してください。
@@ -323,7 +325,7 @@ php artisan migrate --env=testing
 
 ---
 
-### 設定確認コマンド
+### 4-8. 設定確認コマンド
 
 もし設定が正しく反映されているか不安な場合は、  
 以下のコマンドで `.env.testing` と `phpunit.xml` の内容を確認できます。
@@ -357,20 +359,16 @@ php artisan test
 - PHPUnitでの自動テストでは、メール送信や認証を経由できないため無視する。
 ```$this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);```
 
----
-## トラブルシューティング（MailHogエラー）
 
-他プロジェクトでMailHogコンテナが残っている場合、以下のようなエラーが出ることがあります。
-その場合は、既存のMailHogを削除してから再度起動してください。
+### テスト環境で無効化される処理一覧
+- メール送信（MAIL_MAILER=array）
+- ログイン後のメール認証（EnsureEmailIsVerified）
+- セッションは array ドライバ
 
-```bash
-docker rm -f mailhog
-docker compose up -d --build
-```
 
 
 ---
-## 4. 勤怠 CSV 出力について
+## 5. 勤怠 CSV 出力について
 
 管理画面の「CSV出力」ボタンを押すと、選択したユーザーの指定した月の勤怠一覧情報が CSV 形式でダウンロードできます。
 ダウンロードした CSV は Excel などで開け、日ごとの勤怠を一覧で確認可能です。
@@ -409,7 +407,7 @@ docker compose up -d --build
 
 ---
 
-## 5. テーブル
+## 6. テーブル
 
 ### users テーブル
 
@@ -496,13 +494,13 @@ docker compose up -d --build
 
 
 ---
-## 6. ED図
+## 7. ER図
 
 ![ER図](./docs/ED.png)
 
 ---
 
-## ７. phpMyAdmin
+## 8. phpMyAdmin
 
 - URL: http://localhost:8080/
 - ユーザー名・パスワードは `.env` と同じ
@@ -510,7 +508,7 @@ docker compose up -d --build
 
 ---
 
-## 8. 注意事項
+## 9. 注意事項
 
 - MySQL データは `.gitignore` により Git には含めない
 
@@ -539,7 +537,7 @@ docker compose up -d --build
 
 
 ---
-## 認証機能（Authentication）
+## 10. 認証機能（Authentication）
 
 本プロジェクトでは、Laravel Fortify の一部機能（会員登録など）を利用していますが、
 **ログイン機能は Fortify を使用せず、自作の認証処理を実装**しています。
@@ -566,7 +564,7 @@ docker compose up -d --build
 - Fortify：会員登録（`/user/register`）やメール認証のみ利用
 - ログイン：自作コントローラ＋FormRequestで実装（Fortify側は無効化）
 
----
+
 
 #### 参考
 - 一般ログイン：`App\Http\Controllers\User\AuthController`
@@ -591,20 +589,22 @@ docker compose up -d --build
 
 
 
-一般ユーザー（`web`ガード）と管理者（`admin`ガード`）は別セッションで管理されています。  
+一般ユーザー（`web`ガード）と管理者（`admin`ガード`）は別セッションで管理されています。
 同一ブラウザで両方に同時ログインするとセッションが衝突し、リダイレクト不具合が発生する場合があります。
 
 
-###　 セッション管理について
+---
+
+## 11.  セッション管理について
 
 - 本アプリでは「一般ユーザー」と「管理者」の2種類の認証を用意しています。
-- 同一ブラウザで両方にログインするとセッションが混在して不具合が起こる可能性があります。
+- 同一ブラウザで両方にログインするとセッションが混在して不具合が発生する場合があります。
 - **ログイン前に必ず前のアカウントをログアウトしてください。**
 - 一般ユーザーの場合：画面右上の「ログアウト」ボタンからログアウト
 - 管理者の場合：管理画面右上の「ログアウト」ボタンからログアウト
 
 
-#### 補足
+### 補足
 開発者向けに、ログイン時に自動で他方のセッションを破棄するコードも用意していますが、基本はユーザー自身が明示的にログアウトする運用を推奨しています。
 
 
@@ -628,7 +628,7 @@ if (Auth::guard('web')->check()) {
 ```
 
 ---
-## 9. テストユーザー ログイン情報
+## 12. テストユーザー ログイン情報
 
 ### 管理者ユーザー
 - 管理者ログインURL: http://localhost/admin/login
@@ -669,7 +669,7 @@ AdminSeeder.phpで作成しているのでログインする前に一度確認�
 
 
 ---
-## 使用技術
+## 13. 使用技術
 
 - PHP 8.1.33 
 - Laravel 10.49.1
@@ -681,7 +681,7 @@ AdminSeeder.phpで作成しているのでログインする前に一度確認�
 
 
 ---
-## 11. 開発環境 URL
+## 14. 開発環境 URL
 
 - 開発環境: http://localhost/
 - phpMyAdmin: http://localhost:8080/
