@@ -23,7 +23,6 @@
                 翌月 <img class="arrow-icon right-arrow" src="{{ asset('images/arrow.png')}}" alt="▶︎">
             </a>
         </div>
-
         <div class="attendance-table-wrapper">
             <table class="attendance-table">
                 <thead>
@@ -56,7 +55,6 @@
                     </tbody>
             </table>
         </div>
-
         <form action="{{ route('admin.attendance.staff.csv', ['id' => $user->id])}}" method="get">
             <div class="csv-button-wrapper">
                 <input type="hidden" name="month" value="{{ $currentMonth->format('Y-m') }}">

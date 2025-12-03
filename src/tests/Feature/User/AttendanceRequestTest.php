@@ -3,7 +3,6 @@
 namespace Tests\Feature\User;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Admin;
@@ -13,7 +12,6 @@ use App\Models\AttendanceRequest;
 use App\Models\BreakTime;
 use App\Models\BreakTimeRequest;
 use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
 
 class AttendanceRequestTest extends TestCase
 {
@@ -24,7 +22,6 @@ class AttendanceRequestTest extends TestCase
      */
     protected function createUserAndLogin()
     {
-        // メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
         $user = User::create([
@@ -34,7 +31,6 @@ class AttendanceRequestTest extends TestCase
         ]);
         $this->actingAs($user, 'web');
 
-        // 勤怠作成
         $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-01-10',
@@ -43,7 +39,6 @@ class AttendanceRequestTest extends TestCase
             'status' => 'finished',
         ]);
 
-        // 休憩作成
         BreakTime::create([
             'attendance_id' => $attendance->id,
             'break_start' => '12:00',
@@ -65,10 +60,8 @@ class AttendanceRequestTest extends TestCase
                 'remarks' => 'テスト',
             ]);
 
-        // バリデーション失敗で元ページに戻る
         $response->assertRedirect("/attendance/{$attendance->id}/request");
 
-        // セッションにエラーがあることを確認
         $response->assertSessionHasErrors([
             'clock_in',
             'clock_out',
@@ -97,10 +90,8 @@ class AttendanceRequestTest extends TestCase
                 'remarks' => 'テスト',
             ]);
 
-        // バリデーション失敗で元ページに戻る
         $response->assertRedirect("/attendance/{$attendance->id}/request");
 
-        //セッションにエラー確認
         $response->assertSessionHasErrors(['break_times.0']);
         $errors = session('errors')->getMessages();
         $this->assertEquals('休憩時間が不適切な値です', $errors['break_times.0'][0]);
@@ -118,10 +109,8 @@ class AttendanceRequestTest extends TestCase
                 'remarks' => 'テスト',
             ]);
 
-        // バリデーション失敗で元ページに戻る
         $response->assertRedirect("/attendance/{$attendance->id}/request");
 
-        //セッションにエラー確認
         $response->assertSessionHasErrors(['break_times.0']);
         $errors = session('errors')->getMessages();
         $this->assertEquals('休憩時間もしくは退勤時間が不適切な値です', $errors['break_times.0'][0]);
@@ -140,7 +129,6 @@ class AttendanceRequestTest extends TestCase
                 'remarks' => '',
             ]);
 
-        // バリデーション失敗で元ページに戻る
         $response->assertRedirect("/attendance/{$attendance->id}/request");
 
         $response->assertSessionHasErrors(['remarks']);
@@ -152,10 +140,8 @@ class AttendanceRequestTest extends TestCase
 
     public function test_修正申請が正しく作成される()
     {
-        // メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
-        // ユーザー作成＆ログイン
         $user = User::create([
             'name' => 'testuser',
             'email' => 'test@example.com',
@@ -163,7 +149,6 @@ class AttendanceRequestTest extends TestCase
         ]);
         $this->actingAs($user, 'web');
 
-        // 固定の勤怠を作成
         $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => Carbon::parse('2025-01-10'),
@@ -172,14 +157,12 @@ class AttendanceRequestTest extends TestCase
             'status' => 'finished',
         ]);
 
-        // 休憩作成
         BreakTime::create([
             'attendance_id' => $attendance->id,
             'break_start' => '12:00',
             'break_end' => '13:00',
         ]);
 
-        // 修正申請を送信
         $response = $this->post("/attendance/{$attendance->id}/request", [
             'clock_in' => '08:00',
             'clock_out' => '17:00',
@@ -187,20 +170,16 @@ class AttendanceRequestTest extends TestCase
             'remarks' => 'テスト修正申請',
         ]);
 
-        // リダイレクトとセッション確認
         $response->assertRedirect(route('user.show', $attendance->id));
         $response->assertSessionHas('success', '勤怠の修正申請を送信しました');
 
-        // DB から修正申請を取得
         $attendanceRequest = AttendanceRequest::where('attendance_id', $attendance->id)->first();
 
-        // AttendanceRequest の内容確認
         $this->assertEquals('08:00', Carbon::parse($attendanceRequest->after_clock_in)->format('H:i'));
         $this->assertEquals('17:00', Carbon::parse($attendanceRequest->after_clock_out)->format('H:i'));
         $this->assertEquals('テスト修正申請', $attendanceRequest->after_remarks);
         $this->assertEquals('pending', $attendanceRequest->status);
 
-        // 休憩申請の確認
         $breakTimeRequest = BreakTimeRequest::where('attendance_request_id', $attendanceRequest->id)->first();
         $this->assertEquals('11:00', Carbon::parse($breakTimeRequest->after_start)->format('H:i'));
         $this->assertEquals('12:00', Carbon::parse($breakTimeRequest->after_end)->format('H:i'));
@@ -208,10 +187,8 @@ class AttendanceRequestTest extends TestCase
 
     public function test_申請一覧画面で承認待ちと承認済みが正しく表示される()
     {
-        // ユーザーと勤怠作成
         [$user, $attendance] = $this->createUserAndLogin();
 
-        // ユーザーが修正申請を出す（pending）
         $request = AttendanceRequest::create([
             'attendance_id' => $attendance->id,
             'user_id' => $user->id,
@@ -226,13 +203,10 @@ class AttendanceRequestTest extends TestCase
             'after_end' => '12:00:00',
         ]);
 
-        // 承認待ちタブ確認
         $response = $this->get('/my_requests?tab=pending');
         $response->assertStatus(200);
         $response->assertSee('遅刻対応');
 
-
-        // 管理者が承認
         $admin = Admin::create([
             'email' => 'admin@example.com',
             'password' => Hash::make('pass1234'),
@@ -241,14 +215,11 @@ class AttendanceRequestTest extends TestCase
 
         $request->update(['status' => 'approved']);
 
-
-        // ユーザー目線で承認済みタブ確認
         $this->actingAs($user);
         $response = $this->get('/my_requests?tab=approved');
         $response->assertStatus(200);
         $response->assertSee('遅刻対応');
 
-        // 承認待ちタブにはもう表示されない
         $response = $this->get('/my_requests?tab=pending');
         $response->assertStatus(200);
         $response->assertDontSee('遅刻対応');

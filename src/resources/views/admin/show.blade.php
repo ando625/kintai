@@ -22,14 +22,11 @@
             @csrf
             <section class="detail-card">
                 <dl class="detail-list">
-
-                    <!-- 名前 -->
                     <div class="detail-row">
                         <dt class="detail-label">名前</dt>
                         <dd class="detail-value detail-value-name">{{ $user->name }}</dd>
                     </div>
 
-                    <!-- 日付 -->
                     <div class="detail-row">
                         <dt class="detail-label">日付</dt>
                         <dd class="detail-value">
@@ -38,7 +35,6 @@
                         </dd>
                     </div>
 
-                    <!-- 出勤・退勤 -->
                     <div class="detail-row">
                         <dt class="detail-label">出勤・退勤</dt>
                         <dd class="detail-value time-inputs">
@@ -49,14 +45,11 @@
                             <input type="text" name="clock_out" class="time-input"
                                 value="{{ old('clock_out', $display['clock_out']) }}"
                                 @if($isPending) readonly @endif>
-                            @if ($errors->has('clock_in') || $errors->has('clock_out'))
-                                <span class="text-red time-error">出勤時間もしくは退勤時間が不適切な値です</span>
-                            @endif
+                        @if ($errors->has('clock_in') || $errors->has('clock_out'))
+                            <div class="text-red time-error">出勤時間もしくは退勤時間が不適切な値です</div>
+                        @endif
                         </dd>
                     </div>
-
-
-                    <!-- 休憩 -->
                     @php
                         $break1Start = $display['breaks'][0]['start'] ?? '';
                         $break1End   = $display['breaks'][0]['end'] ?? '';
@@ -74,11 +67,11 @@
                             <input type="text" name="break_times[0][end]" class="time-input"
                             value="{{ old('break_times.0.end', $display['breaks'][0]['end'] ?? '') }}"@if($isPending) readonly @endif>
                             @error('break_times.0')
-                                <span class="text-red time-error">{{ $message }}</span>
+                                <div class="text-red time-error">{{ $message }}</div>
                             @enderror
                         </dd>
                     </div>
-                    <!-- 休憩2 -->
+
                     @if(!$isPending || $break2Start || $break2End)
                     <div class="detail-row">
                         <dt class="detail-label">休憩2</dt>
@@ -89,25 +82,21 @@
                             <input type="text" name="break_times[1][end]" class="time-input"
                                 value="{{ old('break_times.1.end', $break2End) }}" @if($isPending) readonly @endif>
                             @error('break_times.1')
-                                <span class="text-red time-error">{{ $message }}</span>
+                                <div class="text-red time-error">{{ $message }}</div>
                             @enderror
                         </dd>
                     </div>
                     @endif
 
-
-                    <!-- 備考 -->
                     <div class="detail-row">
                         <dt class="detail-label">備考</dt>
                         <dd class="detail-value">
                             <textarea name="remarks" class="remarks-input" @if($isPending) readonly @endif>{{ old('remarks', $display['remarks']) }}</textarea>
-                            @error('remarks') <span class="text-red">{{ $message }}</span> @enderror
+                            @error('remarks') <div class="text-red">{{ $message }}</div> @enderror
                         </dd>
                     </div>
-
                 </dl>
             </section>
-
             @if ($isPending)
                 <p class="tent-red">* 承認待ちのため修正はできません。</p>
             @else

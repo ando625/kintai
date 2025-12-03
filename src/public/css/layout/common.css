@@ -72,7 +72,6 @@ body {
     background-color: #F0EFF2;
 }
 
-/* エラーメッセージのスタイルをリセット */
 .text-red {
     line-height: 1.2 !important;
     margin: 0 !important;
@@ -83,7 +82,6 @@ body {
     align-items: center !important;
 }
 
-/* spanタグのデフォルトスタイルをリセット */
 .time-inputs .text-red {
     display: block !important;
 }

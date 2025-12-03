@@ -3,12 +3,9 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Attendance;
-use Carbon\Carbon;
 
 class StatusTest extends TestCase
 {
@@ -18,11 +15,8 @@ class StatusTest extends TestCase
      */
     public function test_勤務外の場合、勤怠ステータスが正しく表示される()
     {
-
-        //メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
-        //ユーザー作成
         $user = User::create([
 
             'name' => 'test',
@@ -42,11 +36,8 @@ class StatusTest extends TestCase
 
     public function test_出勤中の場合、勤怠ステータスが正しく表示される()
     {
-
-        //メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
-        //ユーザー作成
         $user = User::create([
             'name' => 'test',
             'email' => 'test@example.com',
@@ -70,11 +61,8 @@ class StatusTest extends TestCase
 
     public function test_休憩中の場合、勤怠ステータスが正しく表示される()
     {
-
-        //メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
-        //ユーザー作成
         $user = User::create([
 
             'name' => 'test',
@@ -100,11 +88,8 @@ class StatusTest extends TestCase
 
     public function test_退勤済の場合、勤怠ステータスが正しく表示される()
     {
-
-        //メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
-        //ユーザー作成
         $user = User::create([
 
             'name' => 'test',

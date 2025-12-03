@@ -43,7 +43,6 @@ class LoginRequest extends FormRequest
     {
         $credentials = $this->only('email', 'password');
 
-        // attempt() はDB存在確認もパスワードチェックもしてくれる
         if (!Auth::guard('web')->attempt($credentials)) {
             throw ValidationException::withMessages([
                 'email' => 'ログイン情報が登録されていません',

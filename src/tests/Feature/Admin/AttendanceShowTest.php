@@ -3,16 +3,13 @@
 namespace Tests\Feature\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Attendance;
-use App\Models\AttendanceRequest;
 use App\Models\BreakTime;
-use App\Models\BreakTimeRequest;
-use Carbon\Carbon;
+
 
 class AttendanceShowTest extends TestCase
 {
@@ -89,7 +86,7 @@ class AttendanceShowTest extends TestCase
 
         $response = $this->from("/admin/attendance/{$attendance1->id}")
             ->post("/admin/attendance/{$attendance1->id}", [
-                'clock_in' => '20:00', // 出勤が退勤より後
+                'clock_in' => '20:00',
                 'clock_out' => '19:00',
             ]);
 

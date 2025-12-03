@@ -4,10 +4,8 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Carbon\Carbon;
 use App\Models\Attendance;
-use App\Models\BreakTime;
 use App\Models\AttendanceRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\AmendmentRequest;
@@ -70,17 +68,14 @@ class AttendanceController extends Controller
             ->where('user_id', $user->id)
             ->findOrFail($id);
 
-        //修正申請中か判定
         $isPending = $attendance->latestRequest?->status === 'pending';
         $useRequest = $isPending ? $attendance->latestRequest : null;
 
-        //表示値の設定　修正申請中ならafter使う　ないならDBの値を使う
         $clockIn  = $useRequest?->after_clock_in ?? $attendance->clock_in;
         $clockOut = $useRequest?->after_clock_out ?? $attendance->clock_out;
         $remarks = $useRequest?->after_remarks ?? $attendance->remarks;
         $breakTimes = $useRequest?->breakTimeRequests ?? $attendance->breakTimes;
 
-        //休憩表示用配列作成
         $displayBreaks = [];
         foreach ($breakTimes as $b) {
             $start = $useRequest ? $b->after_start : $b->break_start;
@@ -90,7 +85,6 @@ class AttendanceController extends Controller
                 'end'   => $end ? Carbon::parse($end)->format('H:i') : '',
             ];
         }
-
 
         $display = [
             'clock_in' => $clockIn ? Carbon::parse($clockIn)->format('H:i') : '',
@@ -109,7 +103,6 @@ class AttendanceController extends Controller
         $user = Auth::user();
         $attendance = Attendance::with('breakTimes')->findOrFail($id);
 
-        // AttendanceRequest 作成
         $attendanceRequest = AttendanceRequest::create([
             'attendance_id'   => $attendance->id,
             'user_id'         => $user->id,
@@ -122,7 +115,6 @@ class AttendanceController extends Controller
             'status'          => 'pending',
         ]);
 
-        // 休憩申請
         $breakTimesInput = $request->break_times ?? [];
 
         foreach ([0, 1] as $i) {
@@ -131,7 +123,6 @@ class AttendanceController extends Controller
             $end   = $input['end'];
             $attendanceBreak = $attendance->breakTimes[$i] ?? null;
 
-            // 日付と結合して DATETIME に変換
             $workDate = $attendance->work_date->format('Y-m-d');
             $startDatetime = $start ? Carbon::parse("$workDate $start") : null;
             $endDatetime   = $end   ? Carbon::parse("$workDate $end")   : null;
@@ -154,14 +145,12 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        // 承認待ち
         $pendingRequests = AttendanceRequest::with('attendance', 'user')
             ->where('user_id', $user->id)
             ->where('status', 'pending')
             ->orderBy('created_at', 'asc')
             ->get();
 
-        // 承認済み
         $approvedRequests = AttendanceRequest::with('attendance', 'user')
             ->where('user_id', $user->id)
             ->where('status', 'approved')

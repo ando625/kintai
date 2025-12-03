@@ -23,14 +23,11 @@
             @csrf
             <section class="detail-card">
                 <dl class="detail-list">
-
-                    <!-- 名前 -->
                     <div class="detail-row">
                         <dt class="detail-label">名前</dt>
                         <dd class="detail-value detail-value-name">{{ $user->name }}</dd>
                     </div>
 
-                    <!-- 日付 -->
                     <div class="detail-row">
                         <dt class="detail-label">日付</dt>
                         <dd class="detail-value">
@@ -39,7 +36,6 @@
                         </dd>
                     </div>
 
-                    <!-- 出勤・退勤 -->
                     <div class="detail-row">
                         <dt class="detail-label">出勤・退勤</dt>
                         <dd class="detail-value time-inputs">
@@ -55,8 +51,6 @@
                             @endif
                         </dd>
                     </div>
-
-                    <!-- 休憩 -->
                     @php
                         $break1Start = $display['breaks'][0]['start'] ?? '';
                         $break1End   = $display['breaks'][0]['end'] ?? '';
@@ -78,7 +72,6 @@
                             @enderror
                         </dd>
                     </div>
-                    <!-- 休憩2 -->
                     @if(!$isPending || $break2Start || $break2End)
                     <div class="detail-row">
                         <dt class="detail-label">休憩2</dt>
@@ -95,7 +88,6 @@
                     </div>
                     @endif
 
-                    <!-- 備考 -->
                     <div class="detail-row">
                         <dt class="detail-label">備考</dt>
                         <dd class="detail-value">

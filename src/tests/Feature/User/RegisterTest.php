@@ -3,11 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use App\Models\User;
-use Database\Seeders\DatabaseSeeder;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class RegisterTest extends TestCase
 {
@@ -45,15 +41,9 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        //リダイレクトされる = バリデーションが発動している証拠
         $response->assertStatus(302);
-        //セッション（=一時的に保存される情報）にemail のエラーが入っているか確認。
         $response->assertSessionHasErrors('email');
-
-        //Laravel のレスポンス $response だけではエラーメッセージの中身までは見られないから。セッションに保存された errors を自分で取り出す必要がある。
         $errors = session('errors');
-
-        //email に対する最初のエラーメッセージを取り出している。
         $this->assertEquals('メールアドレスを入力してください', $errors->first('email'));
 
     }

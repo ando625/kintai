@@ -3,16 +3,12 @@
 namespace Tests\Feature\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Attendance;
-use App\Models\AttendanceRequest;
 use App\Models\BreakTime;
-use App\Models\BreakTimeRequest;
-use Carbon\Carbon;
 
 class staffListTest extends TestCase
 {
@@ -28,7 +24,6 @@ class staffListTest extends TestCase
         ]);
         $this->actingAs($admin, 'admin');
 
-        // 一般ユーザーを作成
         $user1 = User::create([
             'name' => 'ユーザー1',
             'email' => 'user1@example.com',
@@ -94,7 +89,6 @@ class staffListTest extends TestCase
             'password' => Hash::make('password'),
         ]);
 
-        // 今月と前月の勤怠を作成
         $currentMonthAttendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-11-20',
@@ -177,14 +171,12 @@ class staffListTest extends TestCase
         ]);
         $this->actingAs($admin, 'admin');
 
-        // ユーザー作成
         $user = User::create([
             'name' => 'ユーザー1',
             'email' => 'user1@example.com',
             'password' => Hash::make('password'),
         ]);
 
-        // 勤怠データ作成
         $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-11-20',

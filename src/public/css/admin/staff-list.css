@@ -1,4 +1,3 @@
-/* スタッフ一覧ページ用CSS */
 
 .staff-container {
     max-width: 900px;
@@ -25,7 +24,6 @@
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-    /* 固定レイアウトに変更 */
 }
 
 .staff-table thead {
@@ -41,27 +39,21 @@
     border-bottom: 3px solid #E1E1E1;
 }
 
-/* 各列の幅を固定して中央に寄せる */
 .staff-table th:nth-child(1),
 .staff-table td:nth-child(1) {
     width: 150px;
-    /* 名前列の固定幅 */
     padding-left: 100px;
-    /* 左側に大きな余白 */
 }
 
 .staff-table th:nth-child(2),
 .staff-table td:nth-child(2) {
     width: 350px;
-    /* メールアドレス列の固定幅 */
 }
 
 .staff-table th:nth-child(3),
 .staff-table td:nth-child(3) {
     width: 150px;
-    /* 月次勤怠列の固定幅 */
     padding-right: 100px;
-    /* 右側に大きな余白 */
 }
 
 .staff-table tbody tr {

@@ -22,7 +22,6 @@ class AttendanceRequest extends Model
         'status'
     ];
 
-    //status日本語表示
     public static $statusLabels = [
         'pending' => '承認待ち',
         'approved' => '承認済み',
@@ -35,32 +34,26 @@ class AttendanceRequest extends Model
         'after_clock_out' => 'datetime',
     ];
 
-    //取得アクセサ
     public function getStatusLabelAttribute()
     {
         return self::$statusLabels[$this->status];
     }
 
-
-    //申請は１人のユーザーが出す
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    //申請は一つの勤怠に
     public function attendance()
     {
         return $this->belongsTo(Attendance::class);
     }
 
-    //申請は一人の管理者が承認
     public function admin()
     {
         return $this->belongsTo(Admin::class);
     }
 
-    //申請は複薄の休憩申請をもつ
     public function breakTimeRequests()
     {
         return $this->hasMany(BreakTimeRequest::class);

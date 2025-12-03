@@ -20,7 +20,6 @@ class AttendanceIndexTest extends TestCase
      */
     protected function createUserAndLogin()
     {
-        //メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
         $user = User::create([
@@ -36,7 +35,6 @@ class AttendanceIndexTest extends TestCase
     {
         $user = $this->createUserAndLogin();
 
-        //勤怠を作成
         $attendance = Attendance::create([
             'user_id' => $user->id,
             'work_date' => '2025-01-10',
@@ -97,9 +95,6 @@ class AttendanceIndexTest extends TestCase
         $response->assertSee('8:00');
     }
 
-    /**
-     * 翌月ボタンで翌月勤怠情報が表示される
-     */
     public function test_翌月ボタンで翌月勤怠情報が表示される()
     {
         $user = $this->createUserAndLogin();

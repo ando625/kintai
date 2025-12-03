@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\AdminLoginRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 use App\Providers\RouteServiceProvider;
 
 class AdminAuthController extends Controller
@@ -18,7 +17,6 @@ class AdminAuthController extends Controller
 
     public function login(AdminLoginRequest $request)
     {
-        // 一般ユーザーでログイン中なら強制ログアウト
         if (Auth::guard('web')->check()) {
             Auth::guard('web')->logout();
             session()->invalidate();

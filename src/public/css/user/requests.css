@@ -1,11 +1,10 @@
-/* 全体コンテナ */
+
 .application-container {
     max-width: 900px;
     margin: 0 auto;
     padding: 40px 20px;
 }
 
-/* ページタイトル */
 .page-title {
     font-size: 30px;
     font-weight: bold;
@@ -15,7 +14,6 @@
     border-left: 8px solid #000000;
 }
 
-/* タブコンテナ */
 .border__list.tab-container {
     display: flex;
     gap: 0;
@@ -30,7 +28,6 @@
     list-style: none;
 }
 
-/* タブボタン */
 .tab-button {
     display: block;
     padding: 15px 40px;
@@ -55,14 +52,12 @@
     color: #000;
 }
 
-/* テーブルラッパー */
 .table-wrapper {
     overflow-x: auto;
     background-color: #E1E1E1;
     border-radius: 8px;
 }
 
-/* テーブル */
 .application-table {
     width: 100%;
     border-collapse: collapse;
@@ -89,7 +84,6 @@
     transition: background-color 0.2s ease;
 }
 
-/* 最後の行の下線を削除 */
 .application-table tbody tr:last-child {
     border-bottom: none;
 }
@@ -111,7 +105,6 @@
     padding-left: 20px;
 }
 
-/* 詳細リンク */
 .detail-link {
     color: #000000;
     text-decoration: none;
@@ -124,7 +117,6 @@
     text-decoration: underline;
 }
 
-/* PC: 1400px～1540px */
 @media screen and (min-width: 1400px) and (max-width: 1540px) {
     .application-container {
         max-width: 900px;
@@ -155,7 +147,6 @@
     }
 }
 
-/* タブレット: 768px～850px */
 @media screen and (min-width: 768px) and (max-width: 850px) {
     .application-container {
         max-width: 100%;

@@ -24,7 +24,6 @@ class FortifyServiceProvider extends ServiceProvider
 
         $this->app->singleton(RegisterResponseContract::class, RegisterResponse::class);
 
-        // メール認証ページ表示用
         $this->app->singleton(VerifyEmailViewResponseContract::class, VerifyEmailViewResponse::class);
 
     }
@@ -47,9 +46,7 @@ class FortifyServiceProvider extends ServiceProvider
         App\Http\Controllers\User\AuthController（自分でセキュリティも設定済み）*/
 
 
-        // 🌟 会員登録
         Fortify::registerView(function () {
-            // 登録画面アクセス時にログアウト
             if (auth()->check()) {
                 auth()->logout();
                 request()->session()->invalidate();
@@ -59,7 +56,6 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::createUsersUsing(CreateNewUser::class);
-
 
     }
 }

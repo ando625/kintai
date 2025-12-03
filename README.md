@@ -244,7 +244,7 @@ cp .env .env.testing
 
 `.env.testing` を開いて、上部とDB接続部分を以下のように編集します。
 
-```dotenv
+```
 APP_NAME=Laravel
 APP_ENV=test
 APP_KEY=
@@ -539,7 +539,7 @@ php artisan test
 ---
 ## 10. 認証機能（Authentication）
 
-本プロジェクトでは、Laravel Fortify の一部機能（会員登録など）を利用していますが、
+本プロジェクトでは、Laravel Fortify の一部機能（新規会員登録など）を利用していますが、
 **ログイン機能は Fortify を使用せず、自作の認証処理を実装**しています。
 
 ### 一般ユーザー（User）ログイン
@@ -561,7 +561,7 @@ php artisan test
 - 認証処理（`authenticate()`メソッド）をFormRequest側に分離して可読性を向上
 
 ### Fortify との使い分け
-- Fortify：会員登録（`/user/register`）やメール認証のみ利用
+- Fortify：新規会員登録（`/user/register`）やメール認証のみ利用
 - ログイン：自作コントローラ＋FormRequestで実装（Fortify側は無効化）
 
 
@@ -572,7 +572,7 @@ php artisan test
 - Fortify設定：`App\Providers\FortifyServiceProvider`
 
 ### 一般ログインURL   http://localhost/　 又は　  http://localhost/login
-### 管理者ログインURL   http://localhost/admin/login 
+### 管理者ログインURL   http://localhost/admin/login
 
 
 
@@ -663,7 +663,7 @@ AdminSeeder.phpで作成しているのでログインする前に一度確認�
 
 - パスワードは全員共通：`password`
 
-
+UserSeeder.phpで作成しているのでログインする前に一度確認してください
 ---
 
 

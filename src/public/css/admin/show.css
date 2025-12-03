@@ -1,4 +1,4 @@
-/* 勤怠詳細ページのスタイル */
+
 .attendance-detail-container {
     min-height: 100vh;
     background-color: #f5f5f5;
@@ -96,10 +96,7 @@
     flex-wrap: wrap;
     row-gap: 8px;
 }
-.time-error {
-    margin-top: 1px !important;
-    padding-top: 0 !important;
-}
+
 
 .time-input {
     width: 110px;
@@ -118,18 +115,20 @@
 }
 
 
-
 .time-separator {
     font-size: 16px;
     font-weight: bold;
     color: #000000;
 }
-
+.time-error {
+    margin-top: -20px !important;
+    padding-top: 0 !important;
+}
 .text-red {
     color: #ff0000;
     font-size: 14px;
     font-weight: normal;
-    margin-top: 2px;
+    margin-top: 3px;
     width: 100%;
     display: block;
 }

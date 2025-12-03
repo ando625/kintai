@@ -9,7 +9,6 @@
 @section('content')
 <div class="staff-container">
     <h1 class="staff-title">スタッフ一覧</h1>
-
     <div class="staff-table-wrapper">
         <table class="staff-table">
             <thead>

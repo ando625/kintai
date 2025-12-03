@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -18,11 +17,8 @@ class CheckOutTest extends TestCase
      */
     public function test_退勤ボタンが正しく機能する()
     {
-
-        //メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
-        //ユーザー作成
         $user = User::create([
             'name' => 'test',
             'email' => 'test@example.com',
@@ -37,25 +33,19 @@ class CheckOutTest extends TestCase
             'status' => 'working',
         ]);
 
-        //勤怠画面アクセス
         $response = $this->get('/user/check-in');
         $response->assertStatus(200);
 
-        //退勤ボタンが表示されてるかどうか
         $response->assertSee('退勤');
 
-        //退勤処理実行
         $this->post('/user/clock-out')->assertStatus(302);
 
-        //DBに勤怠済が保存されたか確認
         $this->assertDatabaseHas('attendances', [
             'user_id' => $user->id,
             'status' => 'finished',
         ]);
-        // 退勤後のデータ取得
         $attendance = Attendance::where('user_id', $user->id)->first();
 
-        //表示も確認
         $response = $this->get('/user/check-in');
         $response->assertSee('退勤済');
 
@@ -66,11 +56,8 @@ class CheckOutTest extends TestCase
 
     public function test_退勤時刻が勤怠一覧画面で確認できる()
     {
-
-        //メール認証スキップ
         $this->withoutMiddleware(\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class);
 
-        //ユーザー作成
         $user = User::create([
             'name' => 'test',
             'email' => 'test@example.com',

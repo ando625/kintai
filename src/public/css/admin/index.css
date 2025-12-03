@@ -1,4 +1,4 @@
-/* 全体のコンテナを中央配置 */
+
 .attendance-container {
     display: flex;
     justify-content: center;
@@ -12,7 +12,6 @@
     padding: 30px;
 }
 
-/* ページタイトル */
 .page-title {
     font-size: 24px;
     font-weight: bold;
@@ -22,7 +21,6 @@
     border-left: 8px solid #000000;
 }
 
-/* 日付ナビゲーション */
 .date-navigation {
     display: flex;
     justify-content: space-between;
@@ -82,7 +80,6 @@
     font-size: 20px;
 }
 
-/* テーブルラッパー */
 .attendance-table-wrapper {
     background-color: #FFFFFF;
     border-radius: 10px;
@@ -90,7 +87,6 @@
     overflow: hidden;
 }
 
-/* テーブルスタイル */
 .attendance-table {
     width: 100%;
     border-collapse: collapse;
@@ -134,7 +130,6 @@
     color: #737373;
 }
 
-/* 詳細リンク */
 .detail-link {
     color: #000000;
     text-decoration: none;
@@ -148,14 +143,12 @@
 @media (min-width: 1400px) and (max-width: 1540px) {
     .attendance-wrapper {
         max-width: 1000px;
-        /* 少し広く */
         padding: 30px;
     }
 
     .page-title {
         font-size: 26px;
     }
-
 
     .date-text {
         font-size: 22px;

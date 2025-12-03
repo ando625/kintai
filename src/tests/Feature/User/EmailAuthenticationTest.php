@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
@@ -29,7 +28,6 @@ class EmailAuthenticationTest extends TestCase
             'email_verified_at' => null,
         ]);
 
-        // メール認証通知を手動で送信
         $user->sendEmailVerificationNotification();
 
         Notification::assertSentTo($user, VerifyEmail::class);
@@ -37,7 +35,7 @@ class EmailAuthenticationTest extends TestCase
 
     public function test_認証誘導画面にアクセスできる()
     {
-        // 未認証ユーザーを手動作成
+
         $user = User::create([
             'name' => '未認証太郎',
             'email' => 'unverified@example.com',
@@ -53,7 +51,6 @@ class EmailAuthenticationTest extends TestCase
     }
     public function test_メール認証完了後に勤怠登録画面に遷移する()
     {
-        // 未認証ユーザーを手動作成
         $user = User::create([
             'name' => '未認証太郎',
             'email' => 'unverified2@example.com',
@@ -61,7 +58,6 @@ class EmailAuthenticationTest extends TestCase
             'email_verified_at' => null,
         ]);
 
-        // 認証用URLを生成
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(60),
@@ -70,10 +66,8 @@ class EmailAuthenticationTest extends TestCase
 
         $response = $this->actingAs($user)->get($verificationUrl);
 
-        // 認証完了後、勤怠登録画面へリダイレクトされることを確認
         $response->assertRedirect(route('user.check-in'));
 
-        // ユーザーの認証日時がセットされていることを確認
         $this->assertNotNull($user->fresh()->email_verified_at);
     }
 
@@ -88,9 +82,7 @@ class EmailAuthenticationTest extends TestCase
             'email_verified_at' => null,
         ]);
 
-        // メール認証通知を手動で送信
         $user->sendEmailVerificationNotification();
-
 
         Notification::assertSentTo($user, VerifyEmail::class);
     }

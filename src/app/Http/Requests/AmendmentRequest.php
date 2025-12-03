@@ -46,7 +46,6 @@ class AmendmentRequest extends FormRequest
             $clockOut = $this->clock_out;
 
             if ($clockIn && $clockOut) {
-                // 出勤時間より後の場合はエラー
                 if ($clockIn >= $clockOut) {
                     $validator->errors()->add('clock_in', '出勤時間もしくは退勤時間が不適切な値です');
                     $validator->errors()->add('clock_out', '出勤時間もしくは退勤時間が不適切な値です');
@@ -58,16 +57,13 @@ class AmendmentRequest extends FormRequest
                 $end   = $break['end'] ?? null;
 
                 if ($start && $end) {
-                    // 休憩開始は出勤以降・退勤以前
                     if ($start < $clockIn || $start > $clockOut) {
                         $validator->errors()->add("break_times.$i", '休憩時間が不適切な値です');
                     }
-                    // 休憩終了は開始より後、退勤以前
                     if ($end < $start || $end > $clockOut) {
                         $validator->errors()->add("break_times.$i", '休憩時間もしくは退勤時間が不適切な値です');
                     }
                 } elseif ($start || $end) {
-                    // 片方だけ入力はエラー
                     $validator->errors()->add("break_times.$i", '休憩は開始と終了両方を入力してください');
                 }
             }

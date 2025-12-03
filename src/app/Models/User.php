@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -48,13 +46,11 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
 
-    //１人のユーザーは複数の勤怠を持つ
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
     }
 
-    //１人のユーザーは複数の勤怠申請を出せる
     public function attendancesRequest()
     {
         return $this->hasMany(AttendanceRequest::class);
