@@ -236,13 +236,14 @@ phpコンテナに入り、
 PHP コンテナに入って、`.env` をコピーして `.env.testing` を作成します。
 
 ```bash
-docker compose exec php bash```
-
-```
-cp .env .env.testing
+docker compose exec php bash
 ```
 
-`.env.testing` を開いて、上部とDB接続部分を以下のように編集します。
+
+```cp .env .env.testing```
+
+
+.env.testingを開いて、上部とDB接続部分を以下のように編集します。
 
 ```
 APP_NAME=Laravel
