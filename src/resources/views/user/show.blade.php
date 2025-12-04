@@ -100,7 +100,7 @@
             </section>
 
             @if ($isPending)
-                <p class="tent-red">* 承認待ちのため修正はできません。</p>
+                <p class="tent-red">*承認待ちのため修正はできません。</p>
             @else
                 <div class="button-wrapper">
                     <button type="submit" class="edit-button">修正</button>

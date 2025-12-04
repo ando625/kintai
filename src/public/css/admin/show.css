@@ -89,62 +89,10 @@
     display: inline-block;
 }
 
-/*.time-inputs {
-    display: flex;
-    align-items: center;
-    gap: 60px;
-    flex-wrap: wrap;
-    row-gap: 0px;
-}
 
-
-.time-input {
-    width: 110px;
-    padding: 8px 12px;
-    font-size: 16px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    border: 1px solid #E1E1E1;
-    border-radius: 4px;
-    background-color: #fff;
-    text-align: center;
-}
-
-.time-input:first-child {
-    margin-left: 0;
-}
-
-
-.time-separator {
-    font-size: 16px;
-    font-weight: bold;
-    color: #000000;
-}
-.time-error {
-    flex-basis: 100%;
-    margin-top: 1px;
-    margin-left: 0;
-    padding-top: 0;
-}
-.time-error.text-red {
-    margin-top: 1px;
-}
-.text-red {
-    color: #ff0000;
-    font-size: 14px;
-    font-weight: normal;
-    width: 100%;
-    display: block;
-    margin-top: 0;
-}
-
-.remarks-input+.text-red {
-    margin-top: 3px;
-}*/
 
 .time-inputs {
     display: block;
-    /* flexからblockに変更 */
 }
 
 .time-inputs>input,
@@ -180,7 +128,7 @@
 .time-error {
     display: block;
     width: 100%;
-    margin-top: 4px;
+    margin-top: 10px !important;
     padding-top: 0;
 }
 
