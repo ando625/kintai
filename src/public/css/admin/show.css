@@ -45,7 +45,7 @@
     display: flex;
     align-items: center;
     border-bottom: 2px solid #E1E1E1;
-    padding: 25px 40px;
+    padding: 35px 40px;
 }
 
 .detail-row:last-child {
@@ -89,12 +89,12 @@
     display: inline-block;
 }
 
-.time-inputs {
+/*.time-inputs {
     display: flex;
     align-items: center;
     gap: 60px;
     flex-wrap: wrap;
-    row-gap: 8px;
+    row-gap: 0px;
 }
 
 
@@ -121,16 +121,74 @@
     color: #000000;
 }
 .time-error {
-    margin-top: 2px !important;
-    padding-top: 0 !important;
+    flex-basis: 100%;
+    margin-top: 1px;
+    margin-left: 0;
+    padding-top: 0;
+}
+.time-error.text-red {
+    margin-top: 1px;
 }
 .text-red {
     color: #ff0000;
     font-size: 14px;
     font-weight: normal;
-    margin-top: 3px;
     width: 100%;
     display: block;
+    margin-top: 0;
+}
+
+.remarks-input+.text-red {
+    margin-top: 3px;
+}*/
+
+.time-inputs {
+    display: block;
+    /* flexからblockに変更 */
+}
+
+.time-inputs>input,
+.time-inputs>.time-separator {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.time-input {
+    width: 110px;
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    background-color: #fff;
+    text-align: center;
+    margin-right: 60px;
+}
+
+.time-input:last-of-type {
+    margin-right: 0;
+}
+
+.time-separator {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+    margin: 0 60px 0 0;
+}
+
+.time-error {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding-top: 0;
+}
+
+.text-red {
+    color: #ff0000;
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0;
 }
 
 .remarks-input {

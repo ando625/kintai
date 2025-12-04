@@ -46,7 +46,7 @@
                                 value="{{ old('clock_out', $display['clock_out']) }}"
                                 @if($isPending) readonly @endif>
                         @if ($errors->has('clock_in') || $errors->has('clock_out'))
-                            <div class="text-red time-error">出勤時間もしくは退勤時間が不適切な値です</div>
+                        <div class="text-red time-error">出勤時間もしくは退勤時間が不適切な値です</div>
                         @endif
                         </dd>
                     </div>
@@ -67,8 +67,8 @@
                             <input type="text" name="break_times[0][end]" class="time-input"
                             value="{{ old('break_times.0.end', $display['breaks'][0]['end'] ?? '') }}"@if($isPending) readonly @endif>
                             @error('break_times.0')
-                                <div class="text-red time-error">{{ $message }}</div>
-                            @enderror
+                            <div class="text-red time-error">{{ $message }}</div>
+                        @enderror
                         </dd>
                     </div>
 

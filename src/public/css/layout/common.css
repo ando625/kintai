@@ -72,19 +72,7 @@ body {
     background-color: #F0EFF2;
 }
 
-.text-red {
-    line-height: 1.2 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
 
-.time-inputs {
-    align-items: center !important;
-}
-
-.time-inputs .text-red {
-    display: block !important;
-}
 
 
 
