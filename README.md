@@ -572,7 +572,7 @@ php artisan test
 - 管理者ログイン：`App\Http\Controllers\Admin\AdminAuthController`
 - Fortify設定：`App\Providers\FortifyServiceProvider`
 
-### 一般ログインURL   http://localhost/　 又は　  http://localhost/login
+### 一般ログインURL   http://localhost/ 又は　  http://localhost/login
 ### 管理者ログインURL   http://localhost/admin/login
 
 
