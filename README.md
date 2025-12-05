@@ -318,17 +318,17 @@ php artisan migrate --env=testing
 ✅ `DB_DATABASE="demo_test"`
 
 
- この設定により、テスト実行時は  
-- 環境：`testing`  
-- 接続先DB：`mysql_test`  
-- 使用DB名：`demo_test`  
+ この設定により、テスト実行時は
+- 環境：`testing`
+- 接続先DB：`mysql_test`
+- 使用DB名：`demo_test`
 が自動的に選ばれます。
 
 ---
 
 ### 4-8. 設定確認コマンド
 
-もし設定が正しく反映されているか不安な場合は、  
+もし設定が正しく反映されているか不安な場合は、
 以下のコマンドで `.env.testing` と `phpunit.xml` の内容を確認できます。
 
 ```bash
@@ -444,8 +444,8 @@ php artisan test
 | clock_out  | datetime                                     |             |            |          |               |
 | status     | enum(off_duty,working,break,finished)    |             |            | ○        |               |
 | remarks    | text                                     |             |            |          |               |
-| created_at | timestamp                                |             |            | ○        |               |
-| updated_at | timestamp                                |             |            | ○        |               |
+| created_at | timestamp                                |             |            |         |               |
+| updated_at | timestamp                                |             |            |         |               |
 
 ### break_times テーブル
 
@@ -455,8 +455,8 @@ php artisan test
 | attendance_id  | unsigned bigint |             |            | ○        | attendances(id)   |
 | break_start    | datetime            |             |            |          |                   |
 | break_end      | datetime            |             |            |          |                   |
-| created_at     | timestamp       |             |            | ○        |                   |
-| updated_at     | timestamp       |             |            | ○        |                   |
+| created_at     | timestamp       |             |            |         |                   |
+| updated_at     | timestamp       |             |            |        |                   |
 
 ### attendance_requests テーブル
 
@@ -473,8 +473,8 @@ php artisan test
 | before_remarks   | text                                  |             |            |          |                   |
 | after_remarks    | text                                  |             |            |          |                   |
 | status           | enum(pending,approved)                |             |            |          |                   |
-| created_at       | timestamp                             |             |            | ○        |                   |
-| updated_at       | timestamp                             |             |            | ○        |                   |
+| created_at       | timestamp                             |             |            |         |                   |
+| updated_at       | timestamp                             |             |            |         |                   |
 
 ### break_time_requests テーブル
 
@@ -487,8 +487,8 @@ php artisan test
 | before_end               | datetime            |             |            |          |                              |
 | after_start              | datetime            |             |            |          |                              |
 | after_end                | datetime            |             |            |          |                              |
-| created_at               | timestamp       |             |            | ○        |                              |
-| updated_at               | timestamp       |             |            | ○        |                              |
+| created_at               | timestamp       |             |            |         |                              |
+| updated_at               | timestamp       |             |            |         |                              |
 
 
 
@@ -518,7 +518,7 @@ php artisan test
 ### 勤怠詳細画面（一般ユーザー）の編集制御
 
 勤怠詳細画面では、勤怠データが「承認待ち」の状態の場合、
-修正ページへの遷移を行わず、同一の Blade テンプレート内で以下の対応を実施しています。
+修正を行えず、同一の Blade テンプレート内で以下の対応を実施しています。
 
 - 編集フォームの各入力項目を disabled 化
 - 画面下部に「承認待ちのため修正はできません。」メッセージを表示
@@ -611,12 +611,12 @@ php artisan test
 
 
 ### 動作確認時の注意
-- 一般ユーザー → Chrome  
-- 管理者 → Safari または シークレットモード  
+- 一般ユーザー → Chrome
+- 管理者 → Safari または シークレットモード
 など、**別ブラウザまたは別セッションで確認**してください。
 
 ### 実装上の補足
-管理者ログイン時に、もし一般ユーザーでログイン中だった場合は、  
+管理者ログイン時に、もし一般ユーザーでログイン中だった場合は、
 下記の処理で一般ユーザーを強制ログアウトするようにしています。（一般ユーザーも同じ処理をしています強制ログアウト）
 
 ```php
@@ -640,7 +640,7 @@ if (Auth::guard('web')->check()) {
 
 
 
-AdminSeeder.phpで作成しているのでログインする前に一度確認してください
+**AdminSeeder.phpで作成しているのでログインする前に一度確認してください**
 
 
 
@@ -664,7 +664,7 @@ AdminSeeder.phpで作成しているのでログインする前に一度確認�
 
 - パスワードは全員共通：`password`
 
-UserSeeder.phpで作成しているのでログインする前に一度確認してください
+**UserSeeder.phpで作成しているのでログインする前に一度確認してください**
 ---
 
 
