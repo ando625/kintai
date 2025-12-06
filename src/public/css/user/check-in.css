@@ -109,11 +109,11 @@
 
 
 .message {
-    font-size: 26px;
+    font-size: 20px;
     color: #000000;
-    font-weight: 700;
+    font-weight: bold;
     margin: 0;
-    letter-spacing: 0.5px;
+    letter-spacing: 4px;
 }
 
 
