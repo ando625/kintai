@@ -18,8 +18,6 @@ class AuthController extends Controller
     {
         if (Auth::guard('admin')->check()) {
             Auth::guard('admin')->logout();
-            session()->invalidate();
-            session()->regenerateToken();
         }
 
         $request->authenticate();

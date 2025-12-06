@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\AdminLoginRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
@@ -19,8 +18,6 @@ class AdminAuthController extends Controller
     {
         if (Auth::guard('web')->check()) {
             Auth::guard('web')->logout();
-            session()->invalidate();
-            session()->regenerateToken();
         }
 
         $request->authenticate();
@@ -28,11 +25,9 @@ class AdminAuthController extends Controller
         return redirect()->intended(RouteServiceProvider::ADMIN_HOME);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         Auth::guard('admin')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
 
         return redirect()->route('admin.login');
     }
