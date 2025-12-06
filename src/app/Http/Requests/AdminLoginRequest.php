@@ -29,8 +29,6 @@ class AdminLoginRequest extends FormRequest
         ];
     }
 
-
-
     public function messages()
     {
         return [
@@ -48,7 +46,6 @@ class AdminLoginRequest extends FormRequest
                 'email' => 'ログイン情報が登録されていません',
             ]);
         }
-
         $this->session()->regenerate();
     }
 }

@@ -46,6 +46,10 @@
     transition: color 0.3s;
 }
 
+.nav-text {
+    letter-spacing: 0.1em;
+}
+
 .calendar-icon img {
     width: 20px;
     height: auto;
@@ -85,6 +89,7 @@
     border-radius: 10px;
     margin-bottom: 10px;
     overflow: hidden;
+    letter-spacing: 0.1em;
 }
 
 .attendance-table {
@@ -103,6 +108,7 @@
     font-size: 16px;
     color: #737373;
     height: 30px;
+    letter-spacing: 0.1em;
     border-bottom: 3px solid #E1E1E1;
 }
 
@@ -126,6 +132,7 @@
     height: 30px;
     font-size: 16px;
     font-weight: bold;
+    letter-spacing: 0.1em;
     border-bottom: 2px solid #E1E1E1;
     color: #737373;
 }

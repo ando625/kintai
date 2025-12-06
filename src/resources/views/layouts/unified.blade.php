@@ -28,7 +28,7 @@
                         <a href="{{ route('admin.requests') }}" class="nav-link">申請一覧</a>
                     </li>
                     <li class="nav-item">
-                        <form action="{{ route('logout') }}" method="POST" class="logout-form">
+                        <form action="{{ route('admin.logout') }}" method="POST" class="logout-form">
                             @csrf
                             <button type="submit" class="nav-link logout-button">ログアウト</button>
                         </form>

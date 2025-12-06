@@ -33,6 +33,7 @@
     background-color: #FFFFFF;
     border-radius: 10px;
     overflow: hidden;
+    letter-spacing: 0.1em;
 }
 
 .detail-list {

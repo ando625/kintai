@@ -65,6 +65,9 @@
     vertical-align: middle;
     opacity: 0.5;
 }
+.nav-text {
+    letter-spacing: 0.1em;
+}
 
 .left-arrow {
     margin-right: 5px;
@@ -86,6 +89,7 @@
     background-color: #FFFFFF;
     border-radius: 10px;
     table-layout: auto;
+    letter-spacing: 0.1em;
 }
 
 

@@ -13,14 +13,16 @@
 
         <div class="month-navigation">
             <a href="{{ route('admin.staff.show', ['id' => $user->id, 'month' => $prevMonth]) }}" class="nav-button">
-                <img class="arrow-icon left-arrow" src="{{ asset('images/arrow.png' )}}" alt="◀︎">  前月
+                <img class="arrow-icon left-arrow" src="{{ asset('images/arrow.png' )}}" alt="◀︎">
+                <span class="nav-text">前日</span>
             </a>
             <div class="current-month">
                 <span class="calendar-icon"><img src="{{ asset('images/calender.png') }}" alt="カレンダー"></span>
                 {{ $currentMonth->format('Y/m') }}
             </div>
             <a href="{{ route('admin.staff.show', ['id' => $user->id, 'month' => $nextMonth]) }}" class="nav-button">
-                翌月 <img class="arrow-icon right-arrow" src="{{ asset('images/arrow.png')}}" alt="▶︎">
+                <span class="nav-text">翌日</span>
+                <img class="arrow-icon right-arrow" src="{{ asset('images/arrow.png')}}" alt="▶︎">
             </a>
         </div>
         <div class="attendance-table-wrapper">

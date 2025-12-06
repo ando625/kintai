@@ -34,6 +34,7 @@
     background-color: #FFFFFF;
     border-radius: 10px;
     overflow: hidden;
+    letter-spacing: 0.1em;
 }
 
 .detail-list {
@@ -45,7 +46,7 @@
     display: flex;
     align-items: center;
     border-bottom: 2px solid #E1E1E1;
-    padding: 35px 40px;
+    padding: 25px 40px;
 }
 
 .detail-row:last-child {
@@ -88,7 +89,6 @@
 .date-month {
     display: inline-block;
 }
-
 
 
 .time-inputs {
@@ -217,6 +217,7 @@
     cursor: default;
     pointer-events: none;
     font-size: 16px;
+    letter-spacing: 0.1em;
 }
 
 .time-input[readonly]{

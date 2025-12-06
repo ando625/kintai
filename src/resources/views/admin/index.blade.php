@@ -13,14 +13,16 @@
 
     <div class="date-navigation">
         <a href="{{ route('admin.index', ['date' => $prevDate]) }}" class="attendance-nav-link">
-            <img class="arrow-icon left-arrow" src="{{ asset('images/arrow.png' )}}" alt="◀︎"> 前日
+            <img class="arrow-icon left-arrow" src="{{ asset('images/arrow.png' )}}" alt="◀︎">
+            <span class="nav-text">前日</span>
         </a>
         <div class="current-date">
             <span class="calendar-icon"><img src="{{ asset('images/calender.png') }}" alt="カレンダー"></span>
             <span class="date-text">{{ $targetDate->format('Y/m/d') }}</span>
         </div>
         <a href="{{ route('admin.index', ['date' => $nextDate]) }}" class="attendance-nav-link">
-            翌日 <img class="arrow-icon right-arrow " src="{{ asset('images/arrow.png')}}" alt="▶︎">
+            <span class="nav-text">翌日</span>
+            <img class="arrow-icon right-arrow " src="{{ asset('images/arrow.png')}}" alt="▶︎">
         </a>
     </div>
 
