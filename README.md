@@ -263,7 +263,7 @@ exit   #MySQLを終了
 - `.env.testing` が **すでに存在する場合 → そのまま使う（コピー不要）**
 - `.env.testing` が **存在しない場合 → 初めて作るときだけコピーする**
 
-### `.env.testing` の作成
+#### 補足 `.env.testing` の作成
 
 phpコンテナに入り、
 PHP コンテナに入って、`.env` をコピーして `.env.testing` を作成します。
@@ -274,6 +274,7 @@ docker compose exec php bash
 cp .env .env.testing
 ```
 
+---
 
 .env.testingを開いて、上部とDB接続部分を以下のように編集します。
 
