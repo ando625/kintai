@@ -251,10 +251,9 @@ PHP コンテナに入って、`.env` をコピーして `.env.testing` を作�
 
 ```bash
 docker compose exec php bash
+
+cp .env .env.testing
 ```
-
-
-```cp .env .env.testing```
 
 
 .env.testingを開いて、上部とDB接続部分を以下のように編集します。
