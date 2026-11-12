@@ -1,0 +1,15 @@
+# 依存パッケージの更新を自動でチェックし、更新があればPRを作る設定
+version: 2
+updates:
+  # PHPのパッケージ（composer.json / composer.lock は src/ にある）
+  - package-ecosystem: "composer"
+    directory: "/src"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # PHPコンテナのベースイメージ（docker/php/Dockerfile）
+  - package-ecosystem: "docker"
+    directory: "/docker/php"
+    schedule:
+      interval: "weekly"
