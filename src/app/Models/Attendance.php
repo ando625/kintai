@@ -68,7 +68,8 @@ class Attendance extends Model
     {
         return $this->breakTimes->sum(function ($b) {
             if ($b->break_start && $b->break_end) {
-                return $b->break_end->diffInMinutes($b->break_start);
+                // Carbon 3 から diffInMinutes は向き付きの小数を返すため、true（絶対値）を指定して整数にする（Carbon 2 と同じ結果）
+                return (int) $b->break_end->diffInMinutes($b->break_start, true);
             }
             return 0;
         });
@@ -90,7 +91,8 @@ class Attendance extends Model
     public function getWorkMinutesAttribute()
     {
         if ($this->clock_in && $this->clock_out) {
-            return $this->clock_out->diffInMinutes($this->clock_in) - $this->break_minutes;
+            // Carbon 3 から diffInMinutes は向き付きの小数を返すため、true（絶対値）を指定して整数にする（Carbon 2 と同じ結果）
+            return (int) $this->clock_out->diffInMinutes($this->clock_in, true) - $this->break_minutes;
         }
         return null;
     }
