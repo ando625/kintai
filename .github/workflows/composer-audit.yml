@@ -1,0 +1,33 @@
+# composer の依存パッケージに既知の脆弱性がないかをチェックする
+name: composer audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # 毎週月曜 9:00（日本時間）に定期チェック
+    - cron: "0 0 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+
+      - name: composer.json と composer.lock が正しいか確認
+        run: composer validate --no-check-publish
+
+      - name: 脆弱性チェック（見つかったら失敗にする）
+        run: composer audit --locked
