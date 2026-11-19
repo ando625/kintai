@@ -5,7 +5,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "guzzlehttp/guzzle": "^8.5",
         "laravel/fortify": "^1.31",
         "laravel/framework": "^13.0",
@@ -58,7 +58,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "platform": {
-            "php": "8.4.14"
+            "php": "8.5.0"
         },
         "allow-plugins": {
             "pestphp/pest-plugin": true,
